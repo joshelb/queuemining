@@ -1,0 +1,21 @@
+body {
+    background: url("images/background.png");
+}
+
+.main-box{
+    background-color: white;
+    vertical-align: middle;
+    padding: 40px;
+    border: 20px solid mediumpurple;
+}
+.outlining{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -moz-transform: translateX(-50%) translateY(-50%);
+    -webkit-transform: translateX(-50%) translateY(-50%);
+    transform: translateX(-50%) translateY(-50%);
+    width: 1000px;
+    height: 500px;
+    margin:auto;
+}

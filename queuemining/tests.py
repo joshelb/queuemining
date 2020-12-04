@@ -7,6 +7,7 @@ from shutil import copyfile
 import ntpath
 # Create your tests here.
 
+
 class UploadTestCase(TestCase):
     def setUp(self):
         self.c = Client()

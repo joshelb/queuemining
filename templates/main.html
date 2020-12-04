@@ -1,15 +1,31 @@
 <!DOCTYPE html>
 <html>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'queuemining/style.css' %}">
     <head>
         <meta charset="utf-8">
-        <title>Upload Logs</title>
+        <title>Queuemining</title>
     </head>
     <body>
-  <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-      {{ text }}
-    <button type="submit">Upload</button>
-  </form>
+        <div class="outlining">
+            <div class="main-box">
+                <p>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+
+                            {{ doc_form.as_p }}
+
+                            {{ time_form.as_p }}
+
+                        <button type="submit">Submit</button>
+                    </form>
+                </p>
+                <p>
+                    <form>
+                            {{ text }}
+                    </form>
+                </p>
+            </div>
+        </div>
     </body>
 </html>
