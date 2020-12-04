@@ -41,3 +41,6 @@ def get_data(request):
     context['time_form'] = time_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
+
+
+# def create_table():

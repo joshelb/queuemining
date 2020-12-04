@@ -25,3 +25,6 @@ def submit_timeframe(selectform):
     time_frame = selectform.cleaned_data['timeframe']
     unit = selectform.cleaned_data['unit']
     print(str(time_frame) + str(unit))
+    #time_save = selectform.save()
+    #id = time_save.pk
+    #print(id)
