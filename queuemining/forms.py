@@ -8,7 +8,7 @@ class DocumentForm(forms.ModelForm):
         fields = ('document', )
 
 
-class SelectionForm(forms.Form):
+class SelectionForm(forms.ModelForm):
     class Meta:
         model = Table
     UNIT_CHOICES = (
