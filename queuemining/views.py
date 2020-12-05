@@ -15,30 +15,18 @@ def get_data(request):
     random.seed(10)
     context = {}
     if request.method == 'POST':
-        doc_form = forms.DocumentForm(request.POST, request.FILES)
-        time_form = forms.SelectionForm(request.POST)
-        if doc_form.is_valid() and utils.selection_valid(time_form):
-            utils.submit_document(doc_form)
-            utils.submit_timeframe(time_form)
+        data_form = forms.DataForm(request.POST, request.FILES)
+        if utils.data_valid(data_form):
+            utils.submit_data(data_form)
             text = "Thank you for your upload!"
-        elif utils.selection_valid(time_form) and not doc_form.is_valid():
-            doc_form = forms.DocumentForm()
-            text = "Please upload an event log with your timeframe! \n " \
-                   "Note that the use of a CSV or XES file is mandatory."
-        elif doc_form.is_valid() and not utils.selection_valid(time_form):
-            time_form = forms.SelectionForm()
-            text = "Please submit your desired timeframe with your event log!"
         else:
-            doc_form = forms.DocumentForm()
-            time_form = forms.SelectionForm()
-            text = "Your uploaded file as well as the selected timeframe \n " \
+            data_form = forms.DataForm()
+            text = "Your uploaded file and/or the selected timeframe \n " \
                    "were not submitted in a way usable by the system. Please redo!"
         context['text'] = text
     else:
-        doc_form = forms.DocumentForm()
-        time_form = forms.SelectionForm()
-    context['doc_form'] = doc_form
-    context['time_form'] = time_form
+        data_form = forms.DataForm()
+    context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
 
