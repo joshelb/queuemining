@@ -13,9 +13,7 @@
                     <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        {{ doc_form.as_p }}
-
-                        {{ time_form.as_p }}
+                        {{ data_form.as_p }}
 
                         <button type="submit">Submit</button>
                     </form>
