@@ -11,11 +11,14 @@ from django.conf import settings
 
 
 def view_table(request):
+    """ This view gets a .csv formatted file (currently in base dir of the project)
+        and creates the table specified in the assignment pdf.
+        The input will come from the processmining module where the information will be extracted from the event logs.
+        When that functionality is added it will take .csv formatted tables directly from there."""
     csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
     reader = csv.DictReader(csv_fp, delimiter=",")
-    fieldnames = [i for i in reader.fieldnames]
     data = [i for i in reader]
-    context = {'data': data, 'fields': fieldnames}
+    context = {'data': data}
     return render(request, 'table_2.html', context)
 
 
