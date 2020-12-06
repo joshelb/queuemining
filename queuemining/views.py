@@ -5,6 +5,21 @@ from . import forms
 from . import models
 from django.template import loader
 from . import utils
+import csv
+import os
+from django.conf import settings
+
+
+def view_table(request):
+    """ This view gets a .csv formatted file (currently in base dir of the project)
+        and creates the table specified in the assignment pdf.
+        The input will come from the processmining module where the information will be extracted from the event logs.
+        When that functionality is added it will take .csv formatted tables directly from there."""
+    csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
+    reader = csv.DictReader(csv_fp, delimiter=",")
+    data = [i for i in reader]
+    context = {'data': data}
+    return render(request, 'table_2.html', context)
 
 
 def get_data(request):
@@ -29,6 +44,3 @@ def get_data(request):
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
-
-
-# def show_table():
