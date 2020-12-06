@@ -5,6 +5,7 @@ from . import views
 
 app_name = 'queuemining'
 
+
 urlpatterns = [
     path('', views.get_data, name='get_data'),
     path('view_table', views.view_table, name='view_table')

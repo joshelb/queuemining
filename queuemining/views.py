@@ -22,6 +22,7 @@ def view_table(request):
     return render(request, 'table.html', context)
 
 
+
 def get_data(request):
     """Get data is the view used to manage the upload of the event log,
      as well as of the user setting the time window. In our current version,
