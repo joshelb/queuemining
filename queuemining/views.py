@@ -1,3 +1,4 @@
+
 from django.shortcuts import render
 import random
 from django.http import HttpResponse
@@ -5,6 +6,18 @@ from . import forms
 from . import models
 from django.template import loader
 from . import utils
+import csv
+import os
+from django.conf import settings
+
+def view_table(request):
+    csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
+    reader = csv.DictReader(csv_fp, delimiter=",")
+    fieldnames = [i for i in reader.fieldnames]
+    data = [i for i in reader]
+    context = {'data': data, 'fields': fieldnames}
+    return render(request, 'table_2.html', context)
+
 
 
 def get_data(request):
@@ -29,6 +42,3 @@ def get_data(request):
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
-
-
-# def show_table():
