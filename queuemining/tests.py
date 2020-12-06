@@ -8,7 +8,7 @@ import ntpath
 # Create your tests here.
 
 
-class UploadTestCase(TestCase):
+class InputTestCase(TestCase):
     def setUp(self):
         self.c = Client()
         sys.stderr.write(repr(os.getcwd()) + '\n')
@@ -24,7 +24,7 @@ class UploadTestCase(TestCase):
         head, tail = ntpath.split(path)
         return tail or ntpath.basename(head)
 
-    def test_runUploadTest(self):
+    def test_runInputTest(self):
         with open(self.new_file) as fd:
             self.c.post('/queuemining/', {'document': fd, 'unit': "D", 'timeframe': 2})
             data = Data.objects.filter(document = 'documents/test.xes').filter(unit = 'D', timeframe = 2)
