@@ -19,7 +19,7 @@ def view_table(request):
     reader = csv.DictReader(csv_fp, delimiter=",")
     data = [i for i in reader]
     context = {'data': data}
-    return render(request, 'table_2.html', context)
+    return render(request, 'table.html', context)
 
 
 def get_data(request):
