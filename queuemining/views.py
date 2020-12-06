@@ -17,9 +17,10 @@ def view_table(request):
         When that functionality is added it will take .csv formatted tables directly from there."""
     csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
     reader = csv.DictReader(csv_fp, delimiter=",")
-    data = [i for i in reader]
-    context = {'data': data}
-    return render(request, 'table_2.html', context)
+    table_data = [i for i in reader]
+    context = {'table_data': table_data}
+    return render(request, 'table.html', context)
+
 
 
 def get_data(request):
