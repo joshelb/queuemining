@@ -27,8 +27,8 @@ class UploadTestCase(TestCase):
     def test_runUploadTest(self):
         with open(self.new_file) as fd:
             self.c.post('/queuemining/', {'document': fd, 'unit': "D", 'timeframe': 2})
-            data = Data.objects.filter(document = 'documents/test.xes')
-            data = data.objects.filter(unit = 'D', timeframe = 2)
+            data = Data.objects.filter(document = 'documents/test.xes').filter(unit = 'D', timeframe = 2)
+           # data = data.objects.filter(unit = 'D', timeframe = 2)
             sys.stderr.write(repr(data) + '\n')
         os.remove(self.new_file)
         os.remove('../documents/test.xes')
