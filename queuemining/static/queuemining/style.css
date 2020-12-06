@@ -19,3 +19,14 @@ body {
     height: 500px;
     margin:auto;
 }
+
+table{
+    border: 1px solid black;
+    width: 100%;
+}
+
+td, th {
+    padding: 7px;
+    text-align: center;
+    border: 1px solid black;
+}
