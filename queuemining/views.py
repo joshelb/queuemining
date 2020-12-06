@@ -1,4 +1,3 @@
-
 from django.shortcuts import render
 import random
 from django.http import HttpResponse
@@ -10,6 +9,7 @@ import csv
 import os
 from django.conf import settings
 
+
 def view_table(request):
     csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
     reader = csv.DictReader(csv_fp, delimiter=",")
@@ -17,7 +17,6 @@ def view_table(request):
     data = [i for i in reader]
     context = {'data': data, 'fields': fieldnames}
     return render(request, 'table_2.html', context)
-
 
 
 def get_data(request):
