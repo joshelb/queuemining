@@ -10,9 +10,34 @@
         <div class="outlining">
             <div class="main-box">
                 <p>
-                    <form action="{% url 'queuemining:create_table' table.id %}" method="post" enctype="multipart/form-data">
+                    <form method="post" enctype="multipart/form-data">
                         {% csrf_token %}
+                        <table>
+                            <thead>
+                                <td>Activity</td>
+                                <td>Number of cases in the queue</td>
 
+                                <td>Average service time</td>
+                                <td>Average waiting time</td>
+                                <td>Resources</td>
+                                <td>Capacity of the activity</td>
+                            </thead>
+                            <tbody>
+                                {% for i in data %}
+                                <tr>
+                                    <td>{{i.activity}}</td>
+                                    <td>{{i.number}}</td>
+                                    <td>{{i.service}}</td>
+                                    <td>{{i.waiting}}</td>
+                                    <td>{{i.resources}}</td>
+                                    <td>{{i.capacity}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        <p>
+                            <a href="{% url 'queuemining:get_data' %}">View upload page</a>
+                        </p>
                     </form>
                 </p>
             </div>
