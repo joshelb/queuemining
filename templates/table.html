@@ -4,23 +4,15 @@
     <link rel="stylesheet" type="text/css" href="{% static 'queuemining/style.css' %}">
     <head>
         <meta charset="utf-8">
-        <title>Queuemining</title>
+        <title>Your Table</title>
     </head>
     <body>
         <div class="outlining">
             <div class="main-box">
                 <p>
-                    <form method="post" enctype="multipart/form-data">
+                    <form action="{% url 'queuemining:create_table' table.id %}" method="post" enctype="multipart/form-data">
                         {% csrf_token %}
 
-                        {{ data_form.as_p }}
-
-                        <button type="submit">Submit</button>
-                    </form>
-                </p>
-                <p>
-                    <form>
-                            {{ text }}
                     </form>
                 </p>
             </div>

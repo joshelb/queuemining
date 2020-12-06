@@ -19,6 +19,7 @@ def view_table(request):
     return render(request, 'table_2.html', context)
 
 
+
 def get_data(request):
     """Get data is the view used to manage the upload of the event log,
      as well as of the user setting the time window. In our current version,
@@ -41,4 +42,3 @@ def get_data(request):
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
-
