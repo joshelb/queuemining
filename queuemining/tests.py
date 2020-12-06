@@ -28,8 +28,7 @@ class UploadTestCase(TestCase):
         with open(self.new_file) as fd:
             self.c.post('/queuemining/', {'document': fd, 'unit': "D", 'timeframe': 2})
             data = Data.objects.filter(document = 'documents/test.xes').filter(unit = 'D', timeframe = 2)
-           # data = data.objects.filter(unit = 'D', timeframe = 2)
-            sys.stderr.write(repr(data) + '\n')
+            sys.stderr.write(repr(data[0]) + '\n')
         os.remove(self.new_file)
         os.remove('../documents/test.xes')
         self.assertEqual(len(data), 1)
