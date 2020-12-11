@@ -33,7 +33,7 @@ def get_data(request):
     if request.method == 'POST':
         data_form = forms.DataForm(request.POST, request.FILES)
         if utils.data_valid(data_form):
-            utils.submit_data(data_form)
+            utils.submit_data(data_form, request)
             text = "Thank you for your upload!"
         else:
             data_form = forms.DataForm()
