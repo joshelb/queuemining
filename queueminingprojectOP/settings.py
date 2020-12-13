@@ -84,17 +84,6 @@ DATABASES = {
     }
 }
 
-# Setup settings for Sessions
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-    }
-}
-
-SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
-
-
 
 MEDIA_ROOT = os.path.join(BASE_DIR,'media')
 MEDIA_URL = '/media/'
