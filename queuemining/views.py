@@ -19,8 +19,14 @@ def view_table(request):
     reader = csv.DictReader(csv_fp, delimiter=",")
     table_data = [i for i in reader]
     context = {'table_data': table_data}
+    if request.method == 'POST':
+        time_form = forms.TimeForm(request.POST)
+        if utils.data_valid(time_form):
+            utils.submit_time(time_form, request)
+    else:
+        time_form = forms.TimeForm()
+    context['time_form'] = time_form
     return render(request, 'table.html', context)
-
 
 
 def get_data(request):
@@ -33,7 +39,7 @@ def get_data(request):
     if request.method == 'POST':
         data_form = forms.DataForm(request.POST, request.FILES)
         if utils.data_valid(data_form):
-            utils.submit_data(data_form)
+            utils.submit_data(data_form, request)
             text = "Thank you for your upload!"
         else:
             data_form = forms.DataForm()
