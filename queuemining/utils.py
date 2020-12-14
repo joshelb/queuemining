@@ -33,3 +33,12 @@ def submit_time(form, request):
     data_object = Data.objects.get(id=data_id)
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
+
+
+def delete_time(request, time_id):
+    """A shortcut function that deletes a selected TimeStep from the current Session's Data"""
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    time_step = TimeStep.objects.get(id=time_id)
+    data_object.timestep.remove(time_step)
+    time_step.delete()
