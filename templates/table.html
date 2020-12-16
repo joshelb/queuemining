@@ -35,6 +35,17 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+
+                        <p>Submit a new time step to compare</p>
+
+                        {{ time_form.as_p }}
+
+                        <button type="submit">Submit</button>
+
+                        <p>
+                            {{ text }}
+                        </p>
+
                         <p>
                             <a href="{% url 'queuemining:get_data' %}">View upload page</a>
                         </p>
