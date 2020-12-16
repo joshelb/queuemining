@@ -35,6 +35,19 @@ def submit_time(form, request):
     data_object.timestep.add(time_step)
 
 
+def time_used(form, request):
+    """A shortcut function, used to check if a timestep was already submitted"""
+    output = False
+    time_frame = form.cleaned_data['timeframe']
+    unit = form.cleaned_data['unit']
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    for time in data_object.timestep.all():
+        if time.timeframe == time_frame and time.unit == unit:
+            output = True
+    return output
+
+
 def delete_time(request, time_id):
     """A shortcut function that deletes a selected TimeStep from the current Session's Data"""
     data_id = request.session['data_id']

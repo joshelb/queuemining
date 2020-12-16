@@ -22,7 +22,15 @@ def view_table(request):
     if request.method == 'POST':
         time_form = forms.TimeForm(request.POST)
         if utils.data_valid(time_form):
-            utils.submit_time(time_form, request)
+            if not utils.time_used(time_form, request):
+                utils.submit_time(time_form, request)
+                text = "Thank you for your upload!"
+            else:
+                text = "You have already submitted this timeframe!"
+        else:
+            time_form = forms.TimeForm()
+            text = "Your selected timeframe wasn't submittable"
+        context['text'] = text
     else:
         time_form = forms.TimeForm()
     context['time_form'] = time_form
