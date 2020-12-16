@@ -15,14 +15,10 @@ def data_valid(form):
 def submit_data(form, request):
     """A shortcut function, that submits the data from the DocumentForm to the system"""
     doc_name = form.cleaned_data['document']
-    print(str(doc_name))
-    time_frame = form.cleaned_data['timeframe']
-    unit = form.cleaned_data['unit']
-    print(str(time_frame) + str(unit))
     data_save = form.save()
     data_id = data_save.pk
     request.session['data_id'] = data_id
-    print(data_id)
+    submit_time(form, request)
 
 
 def submit_time(form, request):
@@ -33,6 +29,19 @@ def submit_time(form, request):
     data_object = Data.objects.get(id=data_id)
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
+
+
+def time_used(form, request):
+    """A shortcut function, used to check if a timestep was already submitted"""
+    output = False
+    time_frame = form.cleaned_data['timeframe']
+    unit = form.cleaned_data['unit']
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    for time in data_object.timestep.all():
+        if time.timeframe == time_frame and time.unit == unit:
+            output = True
+    return output
 
 
 def delete_time(request, time_id):
