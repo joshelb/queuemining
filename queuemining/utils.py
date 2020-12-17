@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from .forms import DataForm
 from .models import Data, TimeStep
-
+from django.shortcuts import render
 
 def data_valid(form):
     """A shortcut function, that returns true, if the SelectionForm and DocForm are valid and the selection
@@ -45,9 +45,20 @@ def time_used(form, request):
 
 
 def delete_time(request, time_id):
-    """A shortcut function that deletes a selected TimeStep from the current Session's Data"""
+    if request.method == 'POST':
+        if is_time_available(request):
+            delete_time_step = TimeStep.objects.get(id=time_id).delete()
+            return  render(request, 'table.html', {"data": delete_time_step})
+    else:
+        no_change = TimeStep.objects.get(id=time_id)
+        return render(request, 'table.html', {"data": no_change})
+
+
+def is_time_available(request):
+    output = True
     data_id = request.session['data_id']
     data_object = Data.objects.get(id=data_id)
-    time_step = TimeStep.objects.get(id=time_id)
-    data_object.timestep.remove(time_step)
-    time_step.delete()
+    if len(data_object.timestep.all()) == 0:
+        return False
+    return output
+
