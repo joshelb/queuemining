@@ -9,6 +9,8 @@ import csv
 import os
 from django.conf import settings
 
+from .utils import delete_time_all
+
 
 def view_table(request):
     """ This view gets a .csv formatted file (currently in base dir of the project)
@@ -21,16 +23,29 @@ def view_table(request):
     context = {'table_data': table_data}
     if request.method == 'POST':
         time_form = forms.TimeForm(request.POST)
-        if utils.data_valid(time_form):
-            if not utils.time_used(time_form, request):
-                utils.submit_time(time_form, request)
-                text = "Thank you for your upload!"
+        if 'time_submit' in time_form.data:
+            if utils.data_valid(time_form):
+                if not utils.time_used(time_form, request):
+                    utils.submit_time(time_form, request)
+                    time_text = "Thank you for your upload!"
+                else:
+                    time_text = "You have already submitted this timeframe!"
             else:
-                text = "You have already submitted this timeframe!"
-        else:
+                time_form = forms.TimeForm()
+                time_text = "Your selected timeframe wasn't submittable"
+            context['time_text'] = time_text
+        elif 'time_delete_all' in time_form.data:
             time_form = forms.TimeForm()
-            text = "Your selected timeframe wasn't submittable"
-        context['text'] = text
+            delete_time_all(request)
+            delete_text = "All timesteps have been deleted!"
+            context['delete_text'] = delete_text
+        elif 'time_delete' in time_form.data:
+            time_form = forms.TimeForm()
+
+            """deleting the time"""
+
+            delete_text = "The current timestep has been deleted!"
+            context['delete_text'] = delete_text
     else:
         time_form = forms.TimeForm()
     context['time_form'] = time_form
