@@ -10,6 +10,12 @@ from pm4py.objects.conversion.process_tree import converter as pt_converter
 from pm4py.visualization.petrinet import visualizer as pn_visualizer
 from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.objects.log.util import func as functools
+from pm4py.algo.discovery.dfg import algorithm as dfg_discovery
+from pm4py.visualization.dfg import visualizer as dfg_visualization
+from pm4py.objects.conversion.dfg import converter as dfg_mining
+from pm4py.algo.filtering.log.timestamp import timestamp_filter
+from pm4py.objects.petri import semantics
+import graphviz
 
 
 class CustomException(Exception):
@@ -76,15 +82,25 @@ except FileNotFoundError:
 except CustomException:
     print('Please only give the name of a file formatted in .xes or .csv')
     exit()
-
-# tree = inductive_miner.apply_tree(log, variant=inductive_miner.Variants.IM)
-# net, initial_marking, final_marking = pt_converter.apply(tree, variant=pt_converter.Variants.TO_PETRI_NET)
+# filtered_log = filtered_log_events = timestamp_filter.apply_events(log, "2010-12-30 00:00:00", "2011-01-01 23:59:59")
+# parameters = {inductive_miner.Variants.IM.value.Parameters.ACTIVITY_KEY: 'concept:name'}
+# tree = inductive_miner.apply_tree(filtered_log, variant=inductive_miner.Variants.IM)
+# net, im, fm = pt_converter.apply(tree, variant=pt_converter.Variants.TO_PETRI_NET)
 # print(tree)
 # print(type(tree))
 # gviz = pt_visualizer.apply(tree, parameters={pt_visualizer.Variants.WO_DECORATION.value.Parameters.FORMAT: "png"})
 # pt_visualizer.view(gviz)
-activities = get_activities(log)
-print(log.attributes)
-print(activities)
-resource_count = get_resource_count(log, activities)
-print(resource_count)
+# activities = get_activities(log)
+# print(log.attributes)
+# print(activities)
+# resource_count = get_resource_count(log, activities)
+# print(resource_count)
+dfg = dfg_discovery.apply(log)
+# gviz = dfg_visualization.apply(dfg, log=log, variant=dfg_visualization.Variants.FREQUENCY)
+net, im, fm = dfg_mining.apply(dfg)
+parameters = {pn_visualizer.Variants.FREQUENCY.value.Parameters.FORMAT: "png"}
+gviz = pn_visualizer.apply(net, im, fm, variant=pn_visualizer.Variants.PERFORMANCE, parameters=parameters,
+                           log=log)
+
+pn_visualizer.view(gviz)
+# print(gviz)
