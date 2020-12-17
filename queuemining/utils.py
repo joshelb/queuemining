@@ -3,6 +3,7 @@ from .forms import DataForm
 from .models import Data, TimeStep
 from django.shortcuts import render
 
+
 def data_valid(form):
     """A shortcut function, that returns true, if the SelectionForm and DocForm are valid and the selection
     given by the user is usable (ergo the timeframe is greater than 0 and a unit was selected) """
@@ -14,7 +15,6 @@ def data_valid(form):
 
 def submit_data(form, request):
     """A shortcut function, that submits the data from the DocumentForm to the system"""
-    doc_name = form.cleaned_data['document']
     data_save = form.save()
     data_id = data_save.pk
     request.session['data_id'] = data_id
@@ -48,10 +48,19 @@ def delete_time(request, time_id):
     if request.method == 'POST':
         if is_time_available(request):
             delete_time_step = TimeStep.objects.get(id=time_id).delete()
-            return  render(request, 'table.html', {"data": delete_time_step})
+            return render(request, 'table.html', {"data": delete_time_step})
     else:
         no_change = TimeStep.objects.get(id=time_id)
         return render(request, 'table.html', {"data": no_change})
+
+
+def delete_time_all(request):
+    if is_time_available(request):
+        data_id = request.session['data_id']
+        data_object = Data.objects.get(id=data_id)
+        for time in data_object.timestep.all():
+            time_id = time.id
+            TimeStep.objects.get(id=time_id).delete()
 
 
 def is_time_available(request):
