@@ -9,8 +9,6 @@ import csv
 import os
 from django.conf import settings
 
-from .utils import delete_time_all
-
 
 def view_table(request):
     """ This view gets a .csv formatted file (currently in base dir of the project)
@@ -36,14 +34,12 @@ def view_table(request):
             context['time_text'] = time_text
         elif 'time_delete_all' in time_form.data:
             time_form = forms.TimeForm()
-            delete_time_all(request)
+            utils.delete_time_all(request)
             delete_text = "All timesteps have been deleted!"
             context['delete_text'] = delete_text
         elif 'time_delete' in time_form.data:
             time_form = forms.TimeForm()
-
-            """deleting the time"""
-
+            utils.delete_time(request)
             delete_text = "The current timestep has been deleted!"
             context['delete_text'] = delete_text
     else:

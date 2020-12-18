@@ -47,7 +47,7 @@
                         </p>
 
                         <p>
-                            <a href="{% url 'queuemining:get_data' %}">View upload page</a>
+                            <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
                         </p>
                     </form>
                     <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">{% csrf_token %}

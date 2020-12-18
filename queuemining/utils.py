@@ -44,14 +44,9 @@ def time_used(form, request):
     return output
 
 
-def delete_time(request, time_id):
-    if request.method == 'POST':
-        if is_time_available(request):
-            delete_time_step = TimeStep.objects.get(id=time_id).delete()
-            return render(request, 'table.html', {"data": delete_time_step})
-    else:
-        no_change = TimeStep.objects.get(id=time_id)
-        return render(request, 'table.html', {"data": no_change})
+def delete_time(request):
+    if is_time_available(request):
+        TimeStep.objects.latest('id').delete()
 
 
 def delete_time_all(request):
