@@ -22,13 +22,53 @@ def submit_data(form, request):
 
 
 def submit_time(form, request):
-    """A shortcut function that saves an additional TimeStep"""
+    """A shortcut function that saves an additional TimeStep and saves it converted into
+    hours in the 'current' attribute of the data object"""
     time_frame = form.cleaned_data['timeframe']
     unit = form.cleaned_data['unit']
     data_id = request.session['data_id']
     data_object = Data.objects.get(id=data_id)
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
+    current_time = time_convert(time_frame, unit)
+    data_object.current = current_time
+    data_object.save()
+
+
+def submit_current(form, request):
+    time_step = form.cleaned_data['timestep']
+    set_current_time(request, time_step)
+
+
+def set_current_time(request,timestep):
+    """A shortcut function that returns the current attribute from the data object"""
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    time_frame = timestep.timeframe
+    unit = timestep.unit
+    current_time = time_convert(time_frame, unit)
+    data_object.current = current_time
+    data_object.save()
+
+
+def get_current_time(request):
+    """A shortcut function that returns the current attribute from the data object"""
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    return data_object.current
+
+
+def time_convert(timeframe, unit):
+    """A shortcut function that converts a timestep to hours"""
+    if unit == "H":
+        output = timeframe
+    elif unit == "D":
+        output = timeframe * 24
+    elif unit == "W":
+        output = timeframe * 168
+    elif unit == "M":
+        output = timeframe * 720
+    return output
 
 
 def time_used(form, request):
@@ -65,4 +105,3 @@ def is_time_available(request):
     if len(data_object.timestep.all()) == 0:
         return False
     return output
-

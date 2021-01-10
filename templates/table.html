@@ -42,12 +42,12 @@
 
                         <button type="submit" name="time_submit">Submit</button>
 
-                        <p>
-                            {{ time_text }}
-                        </p>
+                        <p>Choose a timeframe to be visualized</p>
+
+                        {{ current_form }}
 
                         <p>
-                            <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
+                            {{ time_text }}
                         </p>
                     </form>
                     <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">{% csrf_token %}
@@ -56,6 +56,9 @@
                     </form>
                     <p>
                         {{ delete_text }}
+                    </p>
+                    <p>
+                        <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
                     </p>
                 </p>
             </div>
