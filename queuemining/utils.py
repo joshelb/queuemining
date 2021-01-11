@@ -31,8 +31,7 @@ def submit_time(form, request):
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
     current_time = time_convert(time_frame, unit)
-    data_object.current = current_time
-    data_object.save()
+    request.session['current_time'] = current_time
 
 
 def submit_current(form, request):
@@ -47,8 +46,7 @@ def set_current_time(request,timestep):
     time_frame = timestep.timeframe
     unit = timestep.unit
     current_time = time_convert(time_frame, unit)
-    data_object.current = current_time
-    data_object.save()
+    request.session['current_time'] = current_time
 
 
 def get_current_time(request):

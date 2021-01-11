@@ -46,11 +46,14 @@
 
                         {{ current_form }}
 
+                        {{ current }}
+
                         <p>
                             {{ time_text }}
                         </p>
                     </form>
-                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">{% csrf_token %}
+                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
+                        {% csrf_token %}
                         <input type="submit" value="Delete" name="time_delete"/>
                         <input type="submit" value="Delete All" name="time_delete_all"/>
                     </form>
