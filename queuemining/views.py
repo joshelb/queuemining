@@ -45,7 +45,7 @@ def view_table(request):
     context = {'table_data': table_data}
     if request.method == 'POST':
         time_form = forms.TimeForm(request.POST)
-        current_form = forms.CurrentForm(request.POST, request)
+        current_form = forms.CurrentForm(request, request.POST)
         if 'time_submit' in time_form.data:
             if utils.data_valid(time_form):
                 if not utils.time_used(time_form, request):
@@ -71,9 +71,8 @@ def view_table(request):
             utils.submit_current(current_form, request)
     else:
         time_form = forms.TimeForm()
-        current_form = forms.CurrentForm()
+        current_form = forms.CurrentForm(request)
     context['time_form'] = time_form
     context['current_form'] = current_form
-    context['current'] = request.session['current_time']
     return render(request, 'table.html', context)
 

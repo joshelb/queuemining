@@ -30,6 +30,7 @@ def submit_time(form, request):
     data_object = Data.objects.get(id=data_id)
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
+    data_object.save()
     current_time = time_convert(time_frame, unit)
     request.session['current_time'] = current_time
 

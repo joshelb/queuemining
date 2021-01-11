@@ -41,10 +41,10 @@ class CurrentForm(forms.ModelForm):
         queryset=Data.objects.latest('uploaded_at').timestep.all(),
         required=False, empty_label="---", label='Current')
 
-    def __init__(self, *args, **kwargs):
-        self.request = kwargs.pop('request', None)
+    def __init__(self, request, *args, **kwargs):
         super(CurrentForm, self).__init__(*args, **kwargs)
-        if not self.request is None:
-            data_id = self.request['data_id']
+        if not request is None:
+            data_id = request.session['data_id']
             query = Data.objects.get(id=data_id).timestep.all()
-            self.fields['timestep'].evaluated_queryset = query
+            self.fields['timestep'].queryset = query
+            self.fields['timestep'].widget.choices = self.fields['timestep'].choices
