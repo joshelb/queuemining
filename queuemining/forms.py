@@ -30,3 +30,21 @@ class TimeForm(forms.ModelForm):
     )
     timeframe = forms.IntegerField(initial=1)
     unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
+
+
+class CurrentForm(forms.ModelForm):
+    class Meta:
+        model = Data
+        fields = ('timestep', )
+
+    timestep = forms.ModelChoiceField(
+        queryset=Data.objects.latest('uploaded_at').timestep.all(),
+        required=False, empty_label="---", label='Current')
+
+    def __init__(self, request, *args, **kwargs):
+        super(CurrentForm, self).__init__(*args, **kwargs)
+        if not request is None:
+            data_id = request.session['data_id']
+            query = Data.objects.get(id=data_id).timestep.all()
+            self.fields['timestep'].queryset = query
+            self.fields['timestep'].widget.choices = self.fields['timestep'].choices

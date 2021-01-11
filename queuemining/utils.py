@@ -3,6 +3,7 @@ from .forms import DataForm
 from .models import Data, TimeStep
 from django.shortcuts import render
 
+
 def data_valid(form):
     """A shortcut function, that returns true, if the SelectionForm and DocForm are valid and the selection
     given by the user is usable (ergo the timeframe is greater than 0 and a unit was selected) """
@@ -14,7 +15,6 @@ def data_valid(form):
 
 def submit_data(form, request):
     """A shortcut function, that submits the data from the DocumentForm to the system"""
-    doc_name = form.cleaned_data['document']
     data_save = form.save()
     data_id = data_save.pk
     request.session['data_id'] = data_id
@@ -22,13 +22,52 @@ def submit_data(form, request):
 
 
 def submit_time(form, request):
-    """A shortcut function that saves an additional TimeStep"""
+    """A shortcut function that saves an additional TimeStep and saves it converted into
+    hours in the 'current' attribute of the data object"""
     time_frame = form.cleaned_data['timeframe']
     unit = form.cleaned_data['unit']
     data_id = request.session['data_id']
     data_object = Data.objects.get(id=data_id)
     time_step = TimeStep.objects.create(timeframe=time_frame, unit=unit)
     data_object.timestep.add(time_step)
+    data_object.save()
+    current_time = time_convert(time_frame, unit)
+    request.session['current_time'] = current_time
+
+
+def submit_current(form, request):
+    time_step = form.cleaned_data['timestep']
+    set_current_time(request, time_step)
+
+
+def set_current_time(request,timestep):
+    """A shortcut function that returns the current attribute from the data object"""
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    time_frame = timestep.timeframe
+    unit = timestep.unit
+    current_time = time_convert(time_frame, unit)
+    request.session['current_time'] = current_time
+
+
+def get_current_time(request):
+    """A shortcut function that returns the current attribute from the data object"""
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    return data_object.current
+
+
+def time_convert(timeframe, unit):
+    """A shortcut function that converts a timestep to hours"""
+    if unit == "H":
+        output = timeframe
+    elif unit == "D":
+        output = timeframe * 24
+    elif unit == "W":
+        output = timeframe * 168
+    elif unit == "M":
+        output = timeframe * 720
+    return output
 
 
 def time_used(form, request):
@@ -44,14 +83,18 @@ def time_used(form, request):
     return output
 
 
-def delete_time(request, time_id):
-    if request.method == 'POST':
-        if is_time_available(request):
-            delete_time_step = TimeStep.objects.get(id=time_id).delete()
-            return  render(request, 'table.html', {"data": delete_time_step})
-    else:
-        no_change = TimeStep.objects.get(id=time_id)
-        return render(request, 'table.html', {"data": no_change})
+def delete_time(request):
+    if is_time_available(request):
+        TimeStep.objects.latest('id').delete()
+
+
+def delete_time_all(request):
+    if is_time_available(request):
+        data_id = request.session['data_id']
+        data_object = Data.objects.get(id=data_id)
+        for time in data_object.timestep.all():
+            time_id = time.id
+            TimeStep.objects.get(id=time_id).delete()
 
 
 def is_time_available(request):
@@ -61,4 +104,3 @@ def is_time_available(request):
     if len(data_object.timestep.all()) == 0:
         return False
     return output
-

@@ -40,19 +40,30 @@
 
                         {{ time_form.as_p }}
 
-                        <button type="submit" name="submit_button">  Submit</button>
+
+                        <button type="submit" name="time_submit">Submit</button>
+
+
+                        <p>Choose a timeframe to be visualized</p>
+
+                        {{ current_form }}
 
                         <p>
-                            {{ text }}
-                        </p>
-
-                        <p>
-                            <a href="{% url 'queuemining:get_data' %}">View upload page</a>
+                            {{ time_text }}
                         </p>
                     </form>
-                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">{% csrf_token %}
-                        <input type="submit" name="delete" value="Delete"/>
-	                 </form>
+
+                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
+                        {% csrf_token %}
+                        <input type="submit" value="Delete" name="time_delete"/>
+                        <input type="submit" value="Delete All" name="time_delete_all"/>
+                    </form>
+                    <p>
+                        {{ delete_text }}
+                    </p>
+                    <p>
+                        <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
+                    </p>
                 </p>
             </div>
         </div>
