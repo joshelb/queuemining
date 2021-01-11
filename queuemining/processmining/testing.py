@@ -3,10 +3,14 @@ from pm4py.objects.log.importer.xes import importer as xes_importer
 from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.algo.filtering.log.timestamp import timestamp_filter
 import numpy as np
+from pm4py.algo.discovery.inductive import algorithm as inductive_miner
+
 import pandas as pd
 from datetime import timedelta, date, datetime
 import math
-
+import pytz
+from pm4py.statistics.performance_spectrum import algorithm as performance_spectrum
+utc=pytz.UTC
 log = xes_importer.apply('running-example.xes')
 
 event_stream = pm4py.convert_to_event_stream(log)
@@ -63,23 +67,30 @@ def filtertimerange(log):
             elif new2 > old2:
 
                 old2 = new2
-
+    print(old,old2)
     return old, old2
 
 def timerange(start_date, end_date,timestep):
-    for n in range(int(math.ceil(int(int((end_date - start_date).seconds)/60)/timestep))):
-        print(range(int(math.ceil(int(int((end_date - start_date).seconds)/60)/timestep))))
-        yield start_date + timedelta(n)
+    for n in range(int(math.ceil(int(int((end_date - start_date).total_seconds())/60)/timestep))):
+
+        yield start_date + timedelta(minutes=timestep*n)
 
 def timesplitting(log,rangestart,rangeend,timestep):
     for single_step in timerange(rangestart, rangeend,timestep):
-        print(single_step)
+        filtered_log = timestamp_filter.filter_traces_intersecting(log, single_step.strftime("%Y-%m-%d %H:%M:%S"),  (single_step+timedelta(minutes=timestep)).strftime("%Y-%m-%d %H:%M:%S"))
+        print(filtered_log)
+        print(single_step.strftime("%Y-%m-%d %H:%M:%S"))
+        print((single_step+timedelta(minutes=timestep)).strftime("%Y-%m-%d %H:%M:%S"))
 
 
 
 
 start_date , end_date = filtertimerange(log)
-timesplitting(log,start_date,end_date,100)
+timesplitting(log,start_date,end_date,20000)
 
+ps = performance_spectrum.apply(log, ["register request","decide"],
+                                parameters={performance_spectrum.Parameters.ACTIVITY_KEY: "concept:name",
+                                            performance_spectrum.Parameters.TIMESTAMP_KEY: "time:timestamp"})
 
-creatTables(log)
+print(ps)
+
