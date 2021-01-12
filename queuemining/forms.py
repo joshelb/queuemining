@@ -24,7 +24,7 @@ class DataForm(forms.ModelForm):
     )
     timeframe = forms.IntegerField(initial=1)
     unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
-    weekends = forms.MultipleChoiceField(label='Weekend days', choices=DAY_CHOICES)
+    weekends = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.CheckboxSelectMultiple)
     day_start = forms.IntegerField(initial=9)
     day_end = forms.IntegerField(initial=17)
 
@@ -44,13 +44,9 @@ class TimeForm(forms.ModelForm):
     unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
 
 
-class CurrentForm(forms.ModelForm):
-    class Meta:
-        model = Data
-        fields = ('timestep', )
-
+class CurrentForm(forms.Form):
     timestep = forms.ModelChoiceField(
-        queryset=Data.objects.latest('uploaded_at').timestep.all(),
+        queryset=None,
         required=False, empty_label="---", label='Current')
 
     def __init__(self, request, *args, **kwargs):
