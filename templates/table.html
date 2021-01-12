@@ -20,7 +20,7 @@
 							<form method="post" enctype="multipart/form-data">
 								{% csrf_token %}
 
-                                {{ current_form }}
+                                {{ current_form.as_p }}
 
                                 <p>Choose a timeframe to be visualized</p>
 
@@ -44,10 +44,10 @@
                                     <input type="submit" value="Delete" name="time_delete"/>
                                     <input type="submit" value="Delete All" name="time_delete_all"/>
                                 </p>
+                                <p>
+                                    {{ delete_text }}
+                                </p>
                             </form>
-                            <p>
-                                {{ delete_text }}
-                            </p>
                             <p>
                                 <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
                             </p>

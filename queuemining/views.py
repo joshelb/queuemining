@@ -19,7 +19,7 @@ def get_data(request):
     context = {}
     if request.method == 'POST':
         data_form = forms.DataForm(request.POST, request.FILES)
-        if utils.data_valid(data_form):
+        if utils.data_valid(data_form) and utils.hours_valid(data_form):
             utils.submit_data(data_form, request)
             text = "Thank you for your upload!"
         else:

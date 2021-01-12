@@ -8,9 +8,14 @@ def data_valid(form):
     """A shortcut function, that returns true, if the SelectionForm and DocForm are valid and the selection
     given by the user is usable (ergo the timeframe is greater than 0 and a unit was selected) """
     output = False
-    if form.is_valid() and not form.cleaned_data['unit'] == "N" \
-            and form.cleaned_data['timeframe'] > 0\
-            and form.cleaned_data['day_start'] < form.cleaned_data['day_end']\
+    if form.is_valid() and not form.cleaned_data['unit'] == "N" and form.cleaned_data['timeframe'] > 0:
+        output = True
+    return output
+
+
+def hours_valid(form):
+    output = False
+    if form.is_valid() and form.cleaned_data['day_start'] < form.cleaned_data['day_end']\
             and 0 <= form.cleaned_data['day_start'] <= 24\
             and 0 <= form.cleaned_data['day_end'] <= 24\
             and len(form.cleaned_data['weekends']) < 7:
