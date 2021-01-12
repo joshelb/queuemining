@@ -24,7 +24,10 @@ for i in event_stream:
     print(i)
     print(type(i))
 pd.set_option("display.max_rows", None, "display.max_columns", None)
-def creatTables(log):
+def creatTables(log,dataframe, start,end, timestep):
+    for index in dataframe.index():
+        if start < dataframe["start_time"][index] and dataframe["end_time"][index] < end:
+
 
 
 
@@ -71,12 +74,20 @@ def filtertimerange(log):
     return old, old2
 
 def timerange(start_date, end_date,timestep):
+    end_date = end_date.replace(hour = 0, minute= 0, second = 0,microsecond= 0)
+    start_date = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
     for n in range(int(math.ceil(int(int((end_date - start_date).total_seconds())/60)/timestep))):
 
         yield start_date + timedelta(minutes=timestep*n)
 
-def timesplitting(log,rangestart,rangeend,timestep):
+def timesplitting(log,rangestart,rangeend,timestep,dataframe):
     for single_step in timerange(rangestart, rangeend,timestep):
+        creatTables(log,dataframe, single_step,single_step+timedelta(minutes=timestep),timestep)
+
+
+
+
+
         filtered_log = timestamp_filter.filter_traces_intersecting(log, single_step.strftime("%Y-%m-%d %H:%M:%S"),  (single_step+timedelta(minutes=timestep)).strftime("%Y-%m-%d %H:%M:%S"))
         print(filtered_log)
         print(single_step.strftime("%Y-%m-%d %H:%M:%S"))
@@ -93,4 +104,6 @@ ps = performance_spectrum.apply(log, ["register request","decide"],
                                             performance_spectrum.Parameters.TIMESTAMP_KEY: "time:timestamp"})
 
 print(ps)
+
+
 
