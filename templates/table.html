@@ -1,71 +1,93 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'queuemining/style.css' %}">
-    <head>
-        <meta charset="utf-8">
-        <title>Your Table</title>
-    </head>
-    <body>
-        <div class="outlining">
-            <div class="main-box">
-                <p>
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
-                        <table>
-                            <thead>
-                                <td>Activity</td>
-                                <td>Number of cases in the queue</td>
+	<head>
+        {% load static %}
+		<title>Queuemining</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static 'queuemining/main.css' %}" />
+	</head>
+	<body class="is-preload">
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<form method="post" enctype="multipart/form-data">
+								{% csrf_token %}
 
-                                <td>Average service time</td>
-                                <td>Average waiting time</td>
-                                <td>Resources</td>
-                                <td>Capacity of the activity</td>
-                            </thead>
-                            <tbody>
-                                {% for i in table_data %}
-                                <tr>
-                                    <td>{{i.activity}}</td>
-                                    <td>{{i.number}}</td>
-                                    <td>{{i.service}}</td>
-                                    <td>{{i.waiting}}</td>
-                                    <td>{{i.resources}}</td>
-                                    <td>{{i.capacity}}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                <p>Choose a timeframe to be visualized</p>
 
-                        <p>Submit a new time step to compare</p>
+                                {{ current_form }}
 
-                        {{ time_form.as_p }}
+                                <p>Submit a new time step to compare</p>
+
+                                {{ time_form.as_p }}
 
 
-                        <button type="submit" name="time_submit">Submit</button>
+                                <button type="submit" name="time_submit">Submit</button>
 
+								<p>
+									{{ time_text }}
+								</p>
 
-                        <p>Choose a timeframe to be visualized</p>
+                    		</form>
+                            <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
+                                {% csrf_token %}
+                                <input type="submit" value="Delete" name="time_delete"/>
+                                <input type="submit" value="Delete All" name="time_delete_all"/>
+                            </form>
+                            <p>
+                                {{ delete_text }}
+                            </p>
+                            <p>
+                                <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
+                            </p>
+						</ul>
+					</nav>
+				</div>
+			</section>
 
-                        {{ current_form }}
+			<div id="wrapper">
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Your Table</h1>
+                            <table>
+                                <thead>
+                                    <td>Activity</td>
+                                    <td>Number of cases in the queue</td>
+                                    <td>Average service time</td>
+                                    <td>Average waiting time</td>
+                                    <td>Resources</td>
+                                    <td>Capacity of the activity</td>
+                                </thead>
+                                <tbody>
+                                    {% for i in table_data %}
+                                    <tr>
+                                        <td>{{i.activity}}</td>
+                                        <td>{{i.number}}</td>
+                                        <td>{{i.service}}</td>
+                                        <td>{{i.waiting}}</td>
+                                        <td>{{i.resources}}</td>
+                                        <td>{{i.capacity}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+						</div>
+					</section>
+			</div>
 
-                        <p>
-                            {{ time_text }}
-                        </p>
-                    </form>
-
-                    <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
-                        {% csrf_token %}
-                        <input type="submit" value="Delete" name="time_delete"/>
-                        <input type="submit" value="Delete All" name="time_delete_all"/>
-                    </form>
-                    <p>
-                        {{ delete_text }}
-                    </p>
-                    <p>
-                        <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
-                    </p>
-                </p>
-            </div>
-        </div>
-    </body>
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>Queuemining project for RWTH Aachen</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+	</body>
 </html>
