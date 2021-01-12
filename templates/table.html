@@ -20,16 +20,18 @@
 							<form method="post" enctype="multipart/form-data">
 								{% csrf_token %}
 
-                                <p>Choose a timeframe to be visualized</p>
-
                                 {{ current_form }}
 
-                                <p>Submit a new time step to compare</p>
+                                <p>Choose a timeframe to be visualized</p>
 
                                 {{ time_form.as_p }}
 
+                                <p>Submit a new time step to compare</p>
+
 
                                 <button type="submit" name="time_submit">Submit</button>
+
+                                <p></p>
 
 								<p>
 									{{ time_text }}
@@ -38,8 +40,10 @@
                     		</form>
                             <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
                                 {% csrf_token %}
-                                <input type="submit" value="Delete" name="time_delete"/>
-                                <input type="submit" value="Delete All" name="time_delete_all"/>
+                                <p>
+                                    <input type="submit" value="Delete" name="time_delete"/>
+                                    <input type="submit" value="Delete All" name="time_delete_all"/>
+                                </p>
                             </form>
                             <p>
                                 {{ delete_text }}

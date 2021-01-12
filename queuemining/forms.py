@@ -24,7 +24,7 @@ class DataForm(forms.ModelForm):
     )
     timeframe = forms.IntegerField(initial=1)
     unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
-    weekends = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.CheckboxSelectMultiple)
+    weekends = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.SelectMultiple)
     day_start = forms.IntegerField(initial=9)
     day_end = forms.IntegerField(initial=17)
 

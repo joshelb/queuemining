@@ -3121,6 +3121,9 @@ input, select, textarea {
 			list-style: none;
 			padding: 0;
 		}
+		#sidebar nav > ul > form > p {
+			font-size: 0.7em;
+		}
 
 			#sidebar nav > ul > li {
 				-moz-transform: translateY(0);
