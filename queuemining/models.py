@@ -22,4 +22,6 @@ class Data(models.Model):
     document = models.FileField(upload_to='documents/', validators=[validate_file_extension])
     uploaded_at = models.DateTimeField(auto_now_add=True)
     timestep = models.ManyToManyField(TimeStep)
-
+    weekends = models.CharField(max_length=10)
+    day_start = models.IntegerField(default=1)
+    day_end = models.IntegerField(default=1)

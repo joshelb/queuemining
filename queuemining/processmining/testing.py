@@ -9,6 +9,7 @@ import pandas as pd
 from datetime import timedelta, date, datetime
 import math
 import pytz
+from operator import itemgetter
 from pm4py.statistics.performance_spectrum import algorithm as performance_spectrum
 
 utc = pytz.UTC
@@ -135,7 +136,7 @@ def group_by_resources(log):
             for act in contains_res:
                 act_data = [trace.attributes["concept:name"], act.attributes["concept:name"], act.attributes["time:timestamp"]]
                 list_by_res[res].append(act_data)
-            #list_by_res[res].sort() Wie sortiere ich nach timestamp?
+        list_by_res[res].sort(key=itemgetter(2))
     del list_by_res["resource"]
     return list_by_res
 
@@ -150,7 +151,7 @@ def get_end_times(log):
                 next_act = list_by_res[res][list_by_res[res].index(act) + 1]
                 act.append(next_act[2])
             else:
-                act.append("unknown") #Was wenn Endtime unbekannt?
+                act.append("unknown")
     return list_by_res
 
 
@@ -169,7 +170,7 @@ def create_df(log):
             activities.append(act[1])
             resources.append(res)
             start.append(act[2])
-            end.append(act[3])
+            end.append("0")
             wait.append("0")
     d = {"trace_name": traces, "activity_name": activities, "resource": resources,
          "start_time": start, "end_time": end, "waiting_time": wait}
