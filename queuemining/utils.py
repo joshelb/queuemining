@@ -10,7 +10,7 @@ def data_valid(form):
     output = False
     if form.is_valid() and not form.cleaned_data['unit'] == "N" \
             and form.cleaned_data['timeframe'] > 0\
-            and form.cleaned_data['day_start'] > form.cleaned_data['day_end']\
+            and form.cleaned_data['day_start'] < form.cleaned_data['day_end']\
             and 0 <= form.cleaned_data['day_start'] <= 24\
             and 0 <= form.cleaned_data['day_end'] <= 24\
             and len(form.cleaned_data['weekends']) < 7:
