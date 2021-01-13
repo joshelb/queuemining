@@ -43,6 +43,7 @@ def submit_time(form, request):
     data_object.save()
     current_time = time_convert(time_frame, unit)
     request.session['current_time'] = current_time
+    request.session['cur_timestep'] = time_step.id
 
 
 def submit_current(form, request):
@@ -50,13 +51,12 @@ def submit_current(form, request):
     set_current_time(request, time_step)
 
 
-def set_current_time(request,timestep):
+def set_current_time(request, timestep):
     """A shortcut function that returns the current attribute from the data object"""
-    data_id = request.session['data_id']
-    data_object = Data.objects.get(id=data_id)
     time_frame = timestep.timeframe
     unit = timestep.unit
     current_time = time_convert(time_frame, unit)
+    request.session['cur_timestep'] = timestep.id
     request.session['current_time'] = current_time
 
 
@@ -95,7 +95,19 @@ def time_used(form, request):
 
 def delete_time(request):
     if is_time_available(request):
-        TimeStep.objects.latest('id').delete()
+        time_id = request.session['cur_timestep']
+        timestep = TimeStep.objects.get(id=time_id)
+        timestep.delete()
+        if is_time_available(request):
+            time_last = TimeStep.objects.latest('id')
+            set_current_time(request, time_last)
+        else:
+            request.session['cur_timestep'] = None
+            request.session['current_time'] = None
+        output = True
+    else:
+        output = False
+    return output
 
 
 def delete_time_all(request):
@@ -105,6 +117,12 @@ def delete_time_all(request):
         for time in data_object.timestep.all():
             time_id = time.id
             TimeStep.objects.get(id=time_id).delete()
+        request.session['cur_timestep'] = None
+        request.session['current_time'] = None
+        output = True
+    else:
+        output = False
+    return output
 
 
 def is_time_available(request):

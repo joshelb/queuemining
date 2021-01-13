@@ -25,16 +25,23 @@
 
                                 <p>Choose a timeframe to be visualized</p>
 
+                                <button type="submit" name="current_submit">Submit current</button>
+
+                            </form>
+
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+
                                 {{ time_form.as_p }}
 
                                 <p>Submit a new time step to compare</p>
 
 
-                                <button type="submit" name="time_submit">Submit</button>
+                                <button type="submit" name="time_submit">Submit timeframe</button>
 
                                 <p></p>
 
-								<p>
+								<p class="time_text">
 									{{ time_text }}
 								</p>
 

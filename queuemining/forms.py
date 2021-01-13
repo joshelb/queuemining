@@ -23,7 +23,7 @@ class DataForm(forms.ModelForm):
             ("7", "Sunday"),
     )
     timeframe = forms.IntegerField(initial=1)
-    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
+    unit = forms.ChoiceField(label='Unit', choices=UNIT_CHOICES)
     weekends = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.SelectMultiple)
     day_start = forms.IntegerField(initial=9)
     day_end = forms.IntegerField(initial=17)
@@ -40,8 +40,8 @@ class TimeForm(forms.ModelForm):
         ("W", "Week"),
         ("M", "Month")
     )
-    timeframe = forms.IntegerField(initial=1)
-    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
+    timeframe = forms.IntegerField(initial=1, required=False)
+    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES, required=False)
 
 
 class CurrentForm(forms.Form):
@@ -56,3 +56,4 @@ class CurrentForm(forms.Form):
             query = Data.objects.get(id=data_id).timestep.all()
             self.fields['timestep'].queryset = query
             self.fields['timestep'].widget.choices = self.fields['timestep'].choices
+            self.fields['timestep'].id = 'current'
