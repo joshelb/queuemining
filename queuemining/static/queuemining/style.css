@@ -2073,6 +2073,8 @@ input, select, textarea {
 	input[type="password"],
 	input[type="email"],
 	input[type="tel"],
+    input[type="file"],
+    input[type="number"],
 	select,
 	textarea {
 		-moz-appearance: none;
@@ -3323,3 +3325,36 @@ input, select, textarea {
 			}
 
 		}
+
+
+	select[multiple] {
+  		background:none;
+  		height:auto;
+  		padding:0;
+  		margin:0;
+  		border-width: 2px;
+  		border-style: inset;
+  		-moz-appearance: menulist;
+  		-webkit-appearance: menulist;
+  		appearance: menulist;
+		border-radius: 0.25em;
+		color: inherit;
+		display: block;
+		outline: 0;
+		padding: 0 1em;
+		text-decoration: none;
+		width: 100%;
+	}
+
+
+	input[type=number] {
+		-moz-appearance: textfield;
+    }
+
+	input::-webkit-outer-spin-button,
+	input::-webkit-inner-spin-button {
+  		-webkit-appearance: none;
+  		margin: 0;
+	}
+
+
