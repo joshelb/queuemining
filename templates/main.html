@@ -44,7 +44,17 @@
 						<div class="inner">
 							<h1>Queue Mining</h1>
 							<p>Please enter the respective data into the sidebar</p>
-							<p><a href="{% url 'queuemining:view_table' %}"><button>View table page</button></a></p>
+							<p><a href="{% url 'queuemining:view_table' %}" onclick="doClick(); return False"><button>View table page</button></a></p>
+							<script>
+								function doClick(){
+									if ("{{text}}" || "{{text}}".length() > 0){
+										window.location.href = "{% url 'queuemining:view_table' %}"
+									}
+									else{
+										return confirm('Please submit your data')
+									}
+								}
+							</script>
 						</div>
 					</section>
 			</div>
