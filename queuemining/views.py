@@ -24,8 +24,7 @@ def get_data(request):
             text = "Thank you for your upload!"
         else:
             data_form = forms.DataForm()
-            text = "Your uploaded file and/or the selected timeframe \n " \
-                   "were not submitted in a way usable by the system. Please redo!"
+            text = "Your input was not usable by the system. Please redo!"
         context['text'] = text
     else:
         data_form = forms.DataForm()

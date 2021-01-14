@@ -43,7 +43,7 @@
 							<p><a href="{% url 'queuemining:view_table' %}" onclick="doClick(); return false"><button>View table page</button></a></p>
 							<script>
 								function doClick(){
-									if ("{{text}}"){
+									if ("{{text}}"==="Thank you for your upload!"){
 										window.location.href = "{% url 'queuemining:view_table' %}"
 									}
 									else{
