@@ -2,6 +2,8 @@ import pm4py
 from pm4py.objects.log.importer.xes import importer as xes_importer
 from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.algo.filtering.log.timestamp import timestamp_filter
+from pm4py.util.business_hours import BusinessHours
+
 import numpy as np
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
 
@@ -73,7 +75,10 @@ def filtertimerange(log):
     print(old,old2)
     return old, old2
 
-def timerange(start_date, end_date,timestep):
+bh = bh_object = BusinessHours(st, et, worktiming=[10, 16], weekends=[5, 6, 7])
+
+
+def timerange(start_date, end_date,timestep, buissnes_hours):
     end_date = end_date.replace(hour = 0, minute= 0, second = 0,microsecond= 0)
     start_date = end_date.replace(hour=0, minute=0, second=0, microsecond=0)
     for n in range(int(math.ceil(int(int((end_date - start_date).total_seconds())/60)/timestep))):

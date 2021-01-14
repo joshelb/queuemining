@@ -44,11 +44,7 @@ class TimeForm(forms.ModelForm):
     unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
 
 
-class CurrentForm(forms.ModelForm):
-    class Meta:
-        model = Data
-        fields = ('timestep', )
-
+class CurrentForm(forms.Form):
     timestep = forms.ModelChoiceField(
         queryset=Data.objects.latest('uploaded_at').timestep.all(),
         required=False, empty_label="---", label='Current')

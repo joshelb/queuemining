@@ -1,16 +1,19 @@
 import pm4py
+from datetime import timezone
 from pm4py.objects.log.importer.xes import importer as xes_importer
 from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.algo.filtering.log.timestamp import timestamp_filter
 import numpy as np
 from pm4py.algo.discovery.inductive import algorithm as inductive_miner
-
+from pm4py.util.business_hours import BusinessHours
 import pandas as pd
 from datetime import timedelta, date, datetime
 import math
 import pytz
 from operator import itemgetter
 from pm4py.statistics.performance_spectrum import algorithm as performance_spectrum
+from pm4py.objects.log.util import interval_lifecycle
+
 
 utc = pytz.UTC
 log = xes_importer.apply('running-example.xes')
@@ -122,10 +125,16 @@ ps = performance_spectrum.apply(log, ["register request","decide"],
 
 print(ps)
 
-
+print("###################################################################################################################")
 def group_by_resources(log):
     """Returns a dict having a resource as key and a list of lists with an activity name and a timestamp as content"""
-    resources = attributes_filter.get_attribute_values(log, "org:resources")
+    filtered_df = attributes_filter.apply_auto_filter(log, parameters={
+        attributes_filter.Parameters.ATTRIBUTE_KEY: "org:resource",})
+    for i in filtered_df[0]:
+        print(i)
+
+    print(
+        "###################################################################################################################")
     list_by_res = {"resource": [[]]}
     for res in resources:
         traces_containing_res = attributes_filter.apply(log, [res],parameters={
@@ -138,6 +147,7 @@ def group_by_resources(log):
                 list_by_res[res].append(act_data)
         list_by_res[res].sort(key=itemgetter(2))
     del list_by_res["resource"]
+    print(list_by_res)
     return list_by_res
 
 
@@ -175,4 +185,81 @@ def create_df(log):
     d = {"trace_name": traces, "activity_name": activities, "resource": resources,
          "start_time": start, "end_time": end, "waiting_time": wait}
     df = pd.DataFrame(d)
+    print(df)
     return df
+
+
+
+def eventDataFrameSorted(log):
+
+
+
+    event_stream = pm4py.convert_to_event_stream(log)
+
+    colums = ["trace_name","activity_name","resource","start_time","end_time","waiting_time","service_time"]
+    df = pd.DataFrame(columns=colums)
+
+    for i in event_stream:
+        new_row = pd.Series(data={'trace_name': i["case:concept:name"],'activity_name': i["concept:name"],'resource': i["org:resource"],'start_time': i["time:timestamp"]})
+        df = df.append(new_row, ignore_index=True)
+    df = df.sort_values(by=['resource','start_time'])
+    df = df.reset_index(drop=True)
+    resource = df['resource'].unique().tolist()
+    dataframe_list = []
+    for i in resource:
+        dataframe_cut = df.loc[df.resource == i ]
+        dataframe_cut = dataframe_cut.reset_index(drop=True)
+        dataframe_list.append(dataframe_cut)
+
+    return dataframe_list
+
+
+def calculateendtimes(dataframe_list, buissnes_hours_start,buissnes_hours_end,weekendlist):
+    frame_list = []
+    for frame in dataframe_list:
+        for item in range(len(frame.index)):
+            if item < len(frame.index)-1:
+                frame["end_time"][item] = frame["start_time"][item+1]
+            else:
+                datetimeobject = frame["start_time"][item]
+                frame["end_time"][item] = datetimeobject.replace(hour=buissnes_hours_end,minute= 0, second = 0, microsecond = 0)
+
+        frame_list.append(frame)
+
+
+    return frame_list
+
+def calculateworkedtimes(dataframe_list, buissnes_hours_start,buissnes_hours_end,weekendlist):
+    for frame in dataframe_list:
+        for item in range(len(frame.index)):
+            st = datetime.fromtimestamp(frame["start_time"][item].timestamp())
+            et = datetime.fromtimestamp(frame["end_time"][item].timestamp())
+            bh_object = BusinessHours(st,et, worktiming=[buissnes_hours_start, buissnes_hours_end], weekends=weekendlist)
+            worked_time = bh_object.getseconds()
+            frame["service_time"] = worked_time
+        print(frame)
+
+
+
+def calculateworkedtimes(dataframe_list, buissnes_hours_start,buissnes_hours_end,weekendlist):
+    for frame in dataframe_list:
+        for item in range(len(frame.index)):
+            st = datetime.fromtimestamp(frame["start_time"][item].timestamp())
+            et = datetime.fromtimestamp(frame["end_time"][item].timestamp())
+            bh_object = BusinessHours(st,et, worktiming=[buissnes_hours_start, buissnes_hours_end], weekends=weekendlist)
+            worked_time = bh_object.getseconds()
+            frame["service_time"] = worked_time
+        print(frame)
+
+
+
+
+
+
+
+
+#df = eventDataFrameSorted(log)
+#frames = calculateendtimes(df,5,19,[])
+#calculateworkedtimes(frames,5,19,[])
+enriched_log = interval_lifecycle.assign_lead_cycle_time(log)
+print(enriched_log)
