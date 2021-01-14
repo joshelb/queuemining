@@ -21,7 +21,9 @@ class TimeStep(models.Model):
 class Data(models.Model):
     document = models.FileField(upload_to='documents/', validators=[validate_file_extension])
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    weekends = models.CharField(default="7", max_length=100)
+    start_name = models.CharField(default="start name", max_length=200)
+    end_name = models.CharField(default="end name", max_length=200)
+    offdays = models.CharField(default="7", max_length=100)
     day_start = models.IntegerField(default=1)
     day_end = models.IntegerField(default=1)
     timestep = models.ManyToManyField(TimeStep)
