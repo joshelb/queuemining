@@ -23,10 +23,6 @@
 
 								{{ data_form.as_p }}
 
-								<p>
-									{{ text }}
-								</p>
-
 								<li>
                         			<button type="submit">Submit</button>
 								</li>
@@ -43,7 +39,7 @@
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
 							<h1>Queue Mining</h1>
-							<p>Please enter the respective data into the sidebar</p>
+							<p>{{ text }}</p>
 							<p><a href="{% url 'queuemining:view_table' %}" onclick="doClick(); return false"><button>View table page</button></a></p>
 							<script>
 								function doClick(){

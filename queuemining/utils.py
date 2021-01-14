@@ -18,7 +18,7 @@ def hours_valid(form):
     if form.is_valid() and form.cleaned_data['day_start'] < form.cleaned_data['day_end']\
             and 0 <= form.cleaned_data['day_start'] <= 24\
             and 0 <= form.cleaned_data['day_end'] <= 24\
-            and len(form.cleaned_data['weekends']) < 7:
+            and len(form.cleaned_data['offdays']) < 7:
         output = True
     return output
 
