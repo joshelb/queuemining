@@ -1,32 +1,67 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
 <html>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'queuemining/style.css' %}">
-    <head>
-        <meta charset="utf-8">
-        <title>Queuemining</title>
-    </head>
-    <body>
-        <div class="outlining">
-            <div class="main-box">
-                <p>
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+	<head>
+        {% load static %}
+		<title>Queuemining</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static 'queuemining/style.css' %}" />
+	</head>
+	<body class="is-preload">
 
-                        {{ data_form.as_p }}
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+							<form method="post" enctype="multipart/form-data">
+								{% csrf_token %}
 
-                        <button type="submit">Submit</button>
-                    </form>
-                </p>
-                <p>
-                    <form>
-                            {{ text }}
-                    </form>
-                </p>
-                <p>
-                    <a href="{% url 'queuemining:view_table' %}"><button>View table page</button></a>
-                </p>
-            </div>
-        </div>
-    </body>
+								{{ data_form.as_p }}
+
+								<li>
+                        			<button type="submit">Submit</button>
+								</li>
+
+                    		</form>
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Queue Mining</h1>
+							<p>{{ text }}</p>
+							<p><a href="{% url 'queuemining:view_table' %}" onclick="doClick(); return false"><button>View table page</button></a></p>
+							<script>
+								function doClick(){
+									if ("{{text}}"==="Thank you for your upload!"){
+										window.location.href = "{% url 'queuemining:view_table' %}"
+									}
+									else{
+										return confirm('Please submit your data first')
+									}
+								}
+							</script>
+						</div>
+					</section>
+			</div>
+
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>Queuemining project for RWTH Aachen</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+	</body>
 </html>

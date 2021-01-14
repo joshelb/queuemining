@@ -19,16 +19,16 @@ def get_data(request):
     context = {}
     if request.method == 'POST':
         data_form = forms.DataForm(request.POST, request.FILES)
-        if utils.data_valid(data_form):
+        if utils.data_valid(data_form) and utils.hours_valid(data_form):
             utils.submit_data(data_form, request)
             text = "Thank you for your upload!"
         else:
             data_form = forms.DataForm()
-            text = "Your uploaded file and/or the selected timeframe \n " \
-                   "were not submitted in a way usable by the system. Please redo!"
+            text = "Your input was not usable by the system. Please redo!"
         context['text'] = text
     else:
         data_form = forms.DataForm()
+        context['text'] = "Please enter the respective data into the sidebar!"
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
@@ -52,20 +52,24 @@ def view_table(request):
                     utils.submit_time(time_form, request)
                     time_text = "Thank you for your upload!"
                 else:
-                    time_text = "You have already submitted this timeframe!"
+                    time_text = "This timeframe was already used!"
             else:
                 time_form = forms.TimeForm()
-                time_text = "Your selected timeframe wasn't submittable"
+                time_text = "Your timeframe wasn't submittable"
             context['time_text'] = time_text
         elif 'time_delete_all' in time_form.data:
             time_form = forms.TimeForm()
-            utils.delete_time_all(request)
-            delete_text = "All timesteps have been deleted!"
+            if utils.delete_time_all(request):
+                delete_text = "All timesteps have been deleted!"
+            else:
+                delete_text = "There are no timesteps to delete!"
             context['delete_text'] = delete_text
         elif 'time_delete' in time_form.data:
             time_form = forms.TimeForm()
-            utils.delete_time(request)
-            delete_text = "The current timestep has been deleted!"
+            if utils.delete_time(request):
+                delete_text = "The current timestep has been deleted!"
+            else:
+                delete_text = "There are no timesteps to delete!"
             context['delete_text'] = delete_text
         if current_form.is_valid() and not current_form.cleaned_data['timestep'] is None:
             utils.submit_current(current_form, request)

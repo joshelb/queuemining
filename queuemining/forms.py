@@ -5,7 +5,7 @@ from .models import Data, TimeStep
 class DataForm(forms.ModelForm):
     class Meta:
         model = Data
-        fields = ('document', 'timeframe', 'unit', 'weekends', 'day_start', 'day_end')
+        fields = ('document', 'start_name', 'end_name', 'timeframe', 'unit', 'offdays', 'day_start', 'day_end')
     UNIT_CHOICES = (
             ("N", "---"),
             ("H", "Hour"),
@@ -14,6 +14,7 @@ class DataForm(forms.ModelForm):
             ("M", "Month")
     )
     DAY_CHOICES = (
+            ("0", "No Offdays"),
             ("1", "Monday"),
             ("2", "Tuesday"),
             ("3", "Wednesday"),
@@ -22,9 +23,11 @@ class DataForm(forms.ModelForm):
             ("6", "Saturday"),
             ("7", "Sunday"),
     )
+    start_name = forms.CharField(max_length=200, required=False)
+    end_name = forms.CharField(max_length=200, required=False)
     timeframe = forms.IntegerField(initial=1)
-    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
-    weekends = forms.MultipleChoiceField(label='Weekend days', choices=DAY_CHOICES)
+    unit = forms.ChoiceField(label='Unit', choices=UNIT_CHOICES)
+    offdays = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.SelectMultiple)
     day_start = forms.IntegerField(initial=9)
     day_end = forms.IntegerField(initial=17)
 
@@ -40,13 +43,13 @@ class TimeForm(forms.ModelForm):
         ("W", "Week"),
         ("M", "Month")
     )
-    timeframe = forms.IntegerField(initial=1)
-    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES)
+    timeframe = forms.IntegerField(initial=1, required=False)
+    unit = forms.ChoiceField(label='unit', choices=UNIT_CHOICES, required=False)
 
 
 class CurrentForm(forms.Form):
     timestep = forms.ModelChoiceField(
-        queryset=Data.objects.latest('uploaded_at').timestep.all(),
+        queryset=None,
         required=False, empty_label="---", label='Current')
 
     def __init__(self, request, *args, **kwargs):
@@ -56,3 +59,4 @@ class CurrentForm(forms.Form):
             query = Data.objects.get(id=data_id).timestep.all()
             self.fields['timestep'].queryset = query
             self.fields['timestep'].widget.choices = self.fields['timestep'].choices
+            self.fields['timestep'].id = 'current'
