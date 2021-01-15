@@ -12,13 +12,15 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pm4py.statistics.concurrent_activities.log import get as conc_act_get
+from pm4py.statistics.performance_spectrum import algorithm as performance_spectrum
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 def eventDataFrameSorted(log):
     event_stream = pm4py.convert_to_event_stream(log)
     dataframe = pm4py.convert_to_dataframe(log)
-    colums = ["trace_name","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
+    print(dataframe)
+    colums = ["Cases in the queue","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
     df = pd.DataFrame(columns=colums)
     try:
         activities = dataframe['concept:name'].unique().tolist()
@@ -29,31 +31,50 @@ def eventDataFrameSorted(log):
         net, initial_marking, final_marking = pt_converter.apply(tree, variant=pt_converter.Variants.TO_PETRI_NET)
         traces = performance_map.get_transition_performance_with_token_replay(log, net, initial_marking,final_marking)
     except:
-        pass
+        traces = []
 
     for i in activities:
         try:
-            capacity =conc_act_get.apply(log, parameters={conc_act_get.Parameters.TIMESTAMP_KEY: "time:timestamp", conc_act_get.Parameters.START_TIMESTAMP_KEY: "start_timestamp"})
+            count = len(dataframe[dataframe["concept:name"] == i].index)
+            average_service_time = int(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True)["@@duration"]/count)
+            capacity = conc_act_get.apply(log, parameters={conc_act_get.Parameters.TIMESTAMP_KEY: "time:timestamp",
+                                                           conc_act_get.Parameters.START_TIMESTAMP_KEY: "start_timestamp"})
             for item in capacity:
-                if i == "("+"'"+i+"', '"+i+"'"+")":
+                if item == "("+"'"+i+"', '"+i+"'"+")":
                     capacity = capacity[i]
                 else:
                     capacity = 1
-            resource_count = len(dataframe[dataframe["concept:name"] == i]["org:resource"].unique().tolist())
-            count = len(dataframe[dataframe["concept:name"] == i].index)
-            average_service_time = int(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True)["@@duration"]/count)
-            #print(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True))
             try:
-                average_waiting_time = np.mean(traces[i]['all_values'])
+                average_waiting_time = np.average(traces[i]['all_values'])
             except:
                 average_waiting_time = 0
-            sns.distplot(traces[i]['all_values'])
-            plt.show()
 
-        except KeyError:
-            pass
+        except:
+            print(traces)
+            average_service_time = 0
+            waiting_list = []
+            dff = dataframe
+            dff = dff.sort_values(by=['time:timestamp'])
+            dff =dff.reset_index(drop=True)
 
-        new_row = pd.Series(data={'activity_name': i,'Average Service Time': average_service_time, 'Average Waiting Time' : average_waiting_time,
+            for index,row in dff.iterrows():
+                if index == 0 and dff._get_value(index,'concept:name') == i:
+                    waiting_list.append(0)
+
+                if index >0 and dff._get_value(index,'concept:name') == i:
+                    old = dff._get_value(index-1,'time:timestamp')
+                    waiting_list.append((dff._get_value(index,'time:timestamp')-old).total_seconds())
+
+            if len(waiting_list) == 0:
+                average_waiting_time = 0
+
+            else:
+                average_waiting_time = np.average(waiting_list)
+
+            capacity = 3
+        resource_count = len(dataframe[dataframe["concept:name"] == i]["org:resource"].unique().tolist())
+        case_count = len(dataframe[dataframe["concept:name"] == i]["case:concept:name"].unique().tolist())
+        new_row = pd.Series(data={'Cases in the queue' : case_count,'activity_name': i,'Average Service Time': average_service_time, 'Average Waiting Time' : average_waiting_time,
                                   'Number of resources': resource_count,"Capacity of teh activity":capacity})
         df = df.append(new_row, ignore_index=True)
 
@@ -61,6 +82,8 @@ def eventDataFrameSorted(log):
         return None
 
     return df
+
+
 
 
 
@@ -101,9 +124,7 @@ def timesplittingbigger(log,rangestart,rangeend,timestep,businesshooursstart,bus
 def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,businesshoursend, weekend_list):
     dataframe_list = []
     for single_step in timerangehours(rangestart, rangeend,timestep):
-        print(single_step)
         single_step = single_step.replace(hour= businesshooursstart,minute= 0,second=0,microsecond=0) - timedelta(minutes=1)
-        print(single_step)
         if businesshoursend-businesshooursstart <= timestep:
             filtered_log_events = timestamp_filter.apply_events(log, single_step.strftime("%Y-%m-%d %H:%M:%S"), (single_step+timedelta(hours=businesshoursend-businesshooursstart)).strftime("%Y-%m-%d %H:%M:%S"))
             data = eventDataFrameSorted(filtered_log_events)
@@ -161,7 +182,7 @@ def filtertimerange(log):
 
 
 def calculateAverageoftimestep(dataframe_list):
-
+    return
 
 
 
