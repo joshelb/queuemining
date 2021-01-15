@@ -5,6 +5,13 @@ from pm4py.statistics.traces.log import case_arrival
 from pm4py.algo.filtering.log.timestamp import timestamp_filter
 import math
 from datetime import timedelta
+from pm4py.objects.conversion.process_tree import converter as pt_converter
+from pm4py.objects.petri import performance_map
+from pm4py.algo.discovery.inductive import algorithm as inductive_miner
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+from pm4py.statistics.concurrent_activities.log import get as conc_act_get
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
@@ -17,16 +24,39 @@ def eventDataFrameSorted(log):
         activities = dataframe['concept:name'].unique().tolist()
     except KeyError:
         activities = []
+    try:
+        tree = inductive_miner.apply_tree(log)
+        net, initial_marking, final_marking = pt_converter.apply(tree, variant=pt_converter.Variants.TO_PETRI_NET)
+        traces = performance_map.get_transition_performance_with_token_replay(log, net, initial_marking,final_marking)
+    except:
+        pass
 
     for i in activities:
-        new_row = pd.Series(data={'activity_name': i})
-        df = df.append(new_row, ignore_index=True)
         try:
-            print(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna))
-            print("############################")
+            capacity =conc_act_get.apply(log, parameters={conc_act_get.Parameters.TIMESTAMP_KEY: "time:timestamp", conc_act_get.Parameters.START_TIMESTAMP_KEY: "start_timestamp"})
+            for item in capacity:
+                if i == "("+"'"+i+"', '"+i+"'"+")":
+                    capacity = capacity[i]
+                else:
+                    capacity = 1
+            resource_count = len(dataframe[dataframe["concept:name"] == i]["org:resource"].unique().tolist())
+            count = len(dataframe[dataframe["concept:name"] == i].index)
+            average_service_time = int(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True)["@@duration"]/count)
+            #print(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True))
+            try:
+                average_waiting_time = np.mean(traces[i]['all_values'])
+            except:
+                average_waiting_time = 0
+            sns.distplot(traces[i]['all_values'])
+            plt.show()
+
         except KeyError:
             pass
 
+        new_row = pd.Series(data={'activity_name': i,'Average Service Time': average_service_time, 'Average Waiting Time' : average_waiting_time,
+                                  'Number of resources': resource_count,"Capacity of teh activity":capacity})
+        df = df.append(new_row, ignore_index=True)
+    print(df)
     return df
 
 

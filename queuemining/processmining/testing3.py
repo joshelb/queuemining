@@ -8,6 +8,9 @@ from queuemining.processmining.backendutils import filtertimerange,timesplitting
 
 
 
+
+
+
 """"Handles the import of the Log Files and returns the log object"""
 def importLogs(filepath,timestampcolumn):
     if filepath[-4:] == '.xes':
@@ -37,7 +40,7 @@ if __name__ == "__main__":
     logobject = enrichlog(importLogs("reviewing.xes","time:timestamp"))
     st,et = filtertimerange(logobject)
     print(st,et)
-    timestep = 48
+    timestep = 2400
     if timestep >= 24:
         timesplittingbigger(logobject,st,et,timestep,0,19,[])
     else:
