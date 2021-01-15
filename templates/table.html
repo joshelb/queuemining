@@ -94,8 +94,19 @@
                             </table>
 
                             <p>
-                                <a href="{% url 'queuemining:view_analysis' %}"><button>Analyse timesteps</button></a>
+                                <a href="{% url 'queuemining:view_analysis' %}" onclick="doClick(); return false"><button>Show analysis</button></a>
                             </p>
+
+							<script>
+								function doClick(){
+									if ("{{ current }}" === "None"){
+									    return confirm('Please submit timesteps!')
+									}
+									else{
+										window.location.href = "{% url 'queuemining:view_analysis' %}"
+									}
+								}
+							</script>
 
 						</div>
 					</section>

@@ -78,6 +78,7 @@ def view_table(request):
         current_form = forms.CurrentForm(request)
     context['time_form'] = time_form
     context['current_form'] = current_form
+    context['current'] = request.session['current_time']
     return render(request, 'table.html', context)
 
 
