@@ -7,59 +7,29 @@
 <html>
 	<head>
         {% load static %}
-		<title>Queuemining</title>
+		<title>Analysis</title>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-		<link rel="stylesheet" href="{% static 'queuemining/style2.css' %}" />
+		<link rel="stylesheet" href="{% static 'queuemining/style.css' %}" />
 	</head>
-
 	<body class="is-preload">
+
 			<section id="sidebar">
 				<div class="inner">
 					<nav>
 						<ul>
-							<form method="post" enctype="multipart/form-data">
-								{% csrf_token %}
 
-                                {{ current_form.as_p }}
+                          	<h3>Your best timestep</h3>
 
-                                <p>Choose a timeframe to be visualized</p>
+                          	<p>{{ timestep }}</p>
 
-                                <button type="submit" name="current_submit">Submit current</button>
+							<h3>Utilization rate</h3>
 
+                          	<p>{{ util }}</p>
 
-                            </form>
+							<h3>Queue length</h3>
 
-                            <form method="post" enctype="multipart/form-data">
-                                {% csrf_token %}
-
-                                {{ time_form.as_p }}
-
-                                <p>Submit a new time step to compare</p>
-
-
-                                <button type="submit" name="time_submit">Submit timeframe</button>
-
-                                <p></p>
-
-								<p class="time_text">
-									{{ time_text }}
-								</p>
-
-                    		</form>
-                            <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Do you want to delete?')">
-                                {% csrf_token %}
-                                <p>
-                                    <input type="submit" value="Delete" name="time_delete"/>
-                                    <input type="submit" value="Delete All" name="time_delete_all"/>
-                                </p>
-                                <p>
-                                    {{ delete_text }}
-                                </p>
-                            </form>
-                            <p>
-                                <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
-                            </p>
+                          	<p>{{ length }}</p>
 
 						</ul>
 					</nav>
@@ -67,10 +37,12 @@
 			</section>
 
 			<div id="wrapper">
+
+				<!-- Intro -->
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
-							<h1>Your Table</h1>
-                            <table>
+							<h1>Analysis</h1>
+							<table>
                                 <thead>
                                     <td>Activity</td>
                                     <td>Number of cases in the queue</td>
@@ -93,9 +65,10 @@
                                 </tbody>
                             </table>
 
-                            <p>
-                                <a href="{% url 'queuemining:view_analysis' %}"><button>Analyse timesteps</button></a>
-                            </p>
+							<p>
+								<a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
+                            	<a href="{% url 'queuemining:view_table' %}"><button>View table page</button></a>
+                          	</p>
 
 						</div>
 					</section>
@@ -108,5 +81,6 @@
 					</ul>
 				</div>
 			</footer>
+
 	</body>
 </html>

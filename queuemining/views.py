@@ -80,3 +80,11 @@ def view_table(request):
     context['current_form'] = current_form
     return render(request, 'table.html', context)
 
+
+def view_analysis(request):
+    context = {}
+    context['timestep'] = "best timestep"
+    context['util'] = "utilization rate"
+    context['length'] = "queue length"
+    return render(request, 'detail.html', context)
+
