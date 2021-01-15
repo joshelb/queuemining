@@ -40,6 +40,7 @@ if __name__ == "__main__":
     logobject = enrichlog(importLogs("reviewing.xes","time:timestamp"))
     st,et = filtertimerange(logobject)
     print(st,et)
+
     timestep = 2400
     if timestep >= 24:
         timesplittingbigger(logobject,st,et,timestep,0,19,[])

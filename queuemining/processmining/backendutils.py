@@ -16,6 +16,7 @@ from pm4py.statistics.concurrent_activities.log import get as conc_act_get
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 def eventDataFrameSorted(log):
+    dataframe_list = []
     event_stream = pm4py.convert_to_event_stream(log)
     dataframe = pm4py.convert_to_dataframe(log)
     colums = ["trace_name","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
@@ -56,8 +57,11 @@ def eventDataFrameSorted(log):
         new_row = pd.Series(data={'activity_name': i,'Average Service Time': average_service_time, 'Average Waiting Time' : average_waiting_time,
                                   'Number of resources': resource_count,"Capacity of teh activity":capacity})
         df = df.append(new_row, ignore_index=True)
-    print(df)
-    return df
+
+    if not df.empty:
+        dataframe_list.append(df)
+
+    return dataframe_list
 
 
 
@@ -76,7 +80,7 @@ def timesplittingbigger(log,rangestart,rangeend,timestep,businesshooursstart,bus
     for single_step in timerangebigger(rangestart, rangeend, timestep):
         single_step = single_step - timedelta(minutes=1)
         filtered_log_events = timestamp_filter.apply_events(log, single_step.strftime("%Y-%m-%d %H:%M:%S"), (single_step + timedelta(hours=timestep)).strftime("%Y-%m-%d %H:%M:%S"))
-        eventDataFrameSorted(filtered_log_events)
+        data = eventDataFrameSorted(filtered_log_events)
 
 
         fractions = timestep/24
@@ -84,8 +88,9 @@ def timesplittingbigger(log,rangestart,rangeend,timestep,businesshooursstart,bus
         st = (single_step + timedelta(hours=timestep)).strftime("%Y-%m-%d %H:%M:%S")
         end = (single_step + timedelta(hours=timestep + rest)).strftime("%Y-%m-%d %H:%M:%S")
         filtered_log_events = timestamp_filter.apply_events(log, st, end)
-        eventDataFrameSorted(filtered_log_events)
+        data = data.extend(eventDataFrameSorted(filtered_log_events))
 
+    return data
 
 
 def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,businesshoursend, weekend_list):
@@ -95,7 +100,7 @@ def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,busi
         print(single_step)
         if businesshoursend-businesshooursstart <= timestep:
             filtered_log_events = timestamp_filter.apply_events(log, single_step.strftime("%Y-%m-%d %H:%M:%S"), (single_step+timedelta(hours=businesshoursend-businesshooursstart)).strftime("%Y-%m-%d %H:%M:%S"))
-            eventDataFrameSorted(filtered_log_events)
+            data = eventDataFrameSorted(filtered_log_events)
 
         else:
             fractions = int((businesshoursend-businesshooursstart)/timestep)
@@ -106,13 +111,15 @@ def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,busi
                 filtered_log_events = timestamp_filter.apply_events(log, (single_step+timedelta(hours=item*timestep)).strftime("%Y-%m-%d %H:%M:%S"),
                                                                 (single_step+timedelta(hours=item*timestep + timestep)).strftime(
                                                                     "%Y-%m-%d %H:%M:%S"))
-                eventDataFrameSorted(filtered_log_events)
+                data = eventDataFrameSorted(filtered_log_events)
 
 
             st = (single_step + timedelta(hours=fractions * timestep)).strftime("%Y-%m-%d %H:%M:%S")
             end = (single_step + timedelta(hours=fractions * timestep + rest)).strftime("%Y-%m-%d %H:%M:%S")
             filtered_log_events = timestamp_filter.apply_events(log, st,end)
-            df = eventDataFrameSorted(filtered_log_events)
+            data = data.extend(eventDataFrameSorted(filtered_log_events))
+
+    return data
 
 
 
