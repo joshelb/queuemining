@@ -8,7 +8,7 @@ from queuemining.processmining.backendutils import filtertimerange,timesplitting
 
 
 
-
+pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 
 """"Handles the import of the Log Files and returns the log object"""
@@ -43,11 +43,13 @@ if __name__ == "__main__":
 
     timestep = 2400
     if timestep >= 24:
-        timesplittingbigger(logobject,st,et,timestep,0,19,[])
+        datalist = timesplittingbigger(logobject,st,et,timestep,0,19,[])
     else:
-        timesplittinghours(logobject,st,et,timestep,0,19,[])
+        datalist = timesplittinghours(logobject,st,et,timestep,0,19,[])
 
 
+    for i in datalist:
+        print(i)
 
 
 

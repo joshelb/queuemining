@@ -16,7 +16,6 @@ from pm4py.statistics.concurrent_activities.log import get as conc_act_get
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 def eventDataFrameSorted(log):
-    dataframe_list = []
     event_stream = pm4py.convert_to_event_stream(log)
     dataframe = pm4py.convert_to_dataframe(log)
     colums = ["trace_name","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
@@ -58,10 +57,10 @@ def eventDataFrameSorted(log):
                                   'Number of resources': resource_count,"Capacity of teh activity":capacity})
         df = df.append(new_row, ignore_index=True)
 
-    if not df.empty:
-        dataframe_list.append(df)
+    if df.empty:
+        return None
 
-    return dataframe_list
+    return df
 
 
 
@@ -77,10 +76,12 @@ def timerangebigger(start_date,end_date,timestep):
 
 
 def timesplittingbigger(log,rangestart,rangeend,timestep,businesshooursstart,businesshoursend, weekend_list):
+    dataframe_list = []
     for single_step in timerangebigger(rangestart, rangeend, timestep):
         single_step = single_step - timedelta(minutes=1)
         filtered_log_events = timestamp_filter.apply_events(log, single_step.strftime("%Y-%m-%d %H:%M:%S"), (single_step + timedelta(hours=timestep)).strftime("%Y-%m-%d %H:%M:%S"))
         data = eventDataFrameSorted(filtered_log_events)
+        dataframe_list.append(data)
 
 
         fractions = timestep/24
@@ -88,12 +89,17 @@ def timesplittingbigger(log,rangestart,rangeend,timestep,businesshooursstart,bus
         st = (single_step + timedelta(hours=timestep)).strftime("%Y-%m-%d %H:%M:%S")
         end = (single_step + timedelta(hours=timestep + rest)).strftime("%Y-%m-%d %H:%M:%S")
         filtered_log_events = timestamp_filter.apply_events(log, st, end)
-        data = data.extend(eventDataFrameSorted(filtered_log_events))
+        data2 = eventDataFrameSorted(filtered_log_events)
+        dataframe_list.append(data2)
 
-    return data
+
+
+
+    return dataframe_list
 
 
 def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,businesshoursend, weekend_list):
+    dataframe_list = []
     for single_step in timerangehours(rangestart, rangeend,timestep):
         print(single_step)
         single_step = single_step.replace(hour= businesshooursstart,minute= 0,second=0,microsecond=0) - timedelta(minutes=1)
@@ -101,7 +107,7 @@ def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,busi
         if businesshoursend-businesshooursstart <= timestep:
             filtered_log_events = timestamp_filter.apply_events(log, single_step.strftime("%Y-%m-%d %H:%M:%S"), (single_step+timedelta(hours=businesshoursend-businesshooursstart)).strftime("%Y-%m-%d %H:%M:%S"))
             data = eventDataFrameSorted(filtered_log_events)
-
+            dataframe_list.append(data)
         else:
             fractions = int((businesshoursend-businesshooursstart)/timestep)
             rest = (businesshoursend-businesshooursstart)%timestep
@@ -112,14 +118,18 @@ def timesplittinghours(log,rangestart,rangeend,timestep,businesshooursstart,busi
                                                                 (single_step+timedelta(hours=item*timestep + timestep)).strftime(
                                                                     "%Y-%m-%d %H:%M:%S"))
                 data = eventDataFrameSorted(filtered_log_events)
-
+                dataframe_list.append(data)
 
             st = (single_step + timedelta(hours=fractions * timestep)).strftime("%Y-%m-%d %H:%M:%S")
             end = (single_step + timedelta(hours=fractions * timestep + rest)).strftime("%Y-%m-%d %H:%M:%S")
             filtered_log_events = timestamp_filter.apply_events(log, st,end)
-            data = data.extend(eventDataFrameSorted(filtered_log_events))
+            data2 = eventDataFrameSorted(filtered_log_events)
+            dataframe_list.append(data2)
 
-    return data
+
+
+    return dataframe_list
+
 
 
 
@@ -145,6 +155,15 @@ def filtertimerange(log):
                 old2 = new2
 
     return old, old2
+
+
+
+
+
+def calculateAverageoftimestep(dataframe_list):
+
+
+
 
 
 
