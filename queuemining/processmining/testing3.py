@@ -37,11 +37,11 @@ def enrichlog(log):
 
 
 if __name__ == "__main__":
-    logobject = enrichlog(importLogs("running-example.xes","time:timestamp"))
+    logobject = enrichlog(importLogs("reviewing.xes","time:timestamp"))
     st,et = filtertimerange(logobject)
     print(st,et)
 
-    timestep = 20
+    timestep = 2000
     if timestep >= 24:
         datalist = timesplittingbigger(logobject,st,et,timestep,0,19,[])
     else:

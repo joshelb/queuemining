@@ -19,7 +19,6 @@ pd.set_option("display.max_rows", None, "display.max_columns", None)
 def eventDataFrameSorted(log):
     event_stream = pm4py.convert_to_event_stream(log)
     dataframe = pm4py.convert_to_dataframe(log)
-    print(dataframe)
     colums = ["Cases in the queue","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
     df = pd.DataFrame(columns=colums)
     try:
@@ -44,6 +43,7 @@ def eventDataFrameSorted(log):
                     capacity = capacity[i]
                 else:
                     capacity = 1
+
             try:
                 average_waiting_time = np.average(traces[i]['all_values'])
             except:
