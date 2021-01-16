@@ -12,6 +12,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from pm4py.statistics.concurrent_activities.log import get as conc_act_get
+from pm4py.algo.filtering.log.attributes import attributes_filter
 from pm4py.statistics.performance_spectrum import algorithm as performance_spectrum
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
@@ -50,7 +51,6 @@ def eventDataFrameSorted(log):
                 average_waiting_time = 0
 
         except:
-            print(traces)
             average_service_time = 0
             waiting_list = []
             dff = dataframe
@@ -71,7 +71,15 @@ def eventDataFrameSorted(log):
             else:
                 average_waiting_time = np.average(waiting_list)
 
-            capacity = 3
+            dff = dff[dff["concept:name"] == i]
+            dff = dff.sort_values(by=['time:timestamp'])
+            dff = dff.reset_index(drop=True)
+            capacity = 0
+            for index,row in dff.iterrows():
+
+                if index >0 and dff._get_value(index, 'time:timestamp') == dff._get_value(index-1, 'time:timestamp'):
+                    capacity += 1
+
         resource_count = len(dataframe[dataframe["concept:name"] == i]["org:resource"].unique().tolist())
         case_count = len(dataframe[dataframe["concept:name"] == i]["case:concept:name"].unique().tolist())
         new_row = pd.Series(data={'Cases in the queue' : case_count,'activity_name': i,'Average Service Time': average_service_time, 'Average Waiting Time' : average_waiting_time,
@@ -181,8 +189,42 @@ def filtertimerange(log):
 
 
 
-def calculateAverageoftimestep(dataframe_list):
-    return
+def calculateAverageoftimestep(dataframe_list,log):
+    cases_in_queue = []
+    average_service_time = []
+    average_waiting_time = []
+    number_of_resources = []
+    capacity_of_activity = []
+
+    activities = attributes_filter.get_attribute_values(log, "concept:name")
+    colums = ["Cases in the queue","activity_name","Average Service Time","Average Waiting Time","Number of resources","Capacity of teh activity"]
+    df = pd.DataFrame(columns=colums)
+    for activity in activities:
+        for frame in dataframe_list:
+            try:
+
+                dataframe_filtered = frame[frame["activity_name"] == activity]
+                dataframe_filtered = dataframe_filtered.reset_index(drop=True)
+                cases_in_queue.append(dataframe_filtered.iloc[0][0])
+                average_service_time.append(dataframe_filtered.iloc[0][2])
+                average_waiting_time.append(dataframe_filtered.iloc[0][3])
+                number_of_resources.append(dataframe_filtered.iloc[0][4])
+                capacity_of_activity.append(dataframe_filtered.iloc[0][5])
+
+
+            except:
+                pass
+        new_row = pd.Series(
+            data={'Cases in the queue': np.average(cases_in_queue), 'activity_name': activity, 'Average Service Time': np.average(average_service_time),
+                    'Average Waiting Time': np.average(average_waiting_time),
+              'Number of resources': np.average(number_of_resources), "Capacity of teh activity": np.average(capacity_of_activity)})
+
+        df = df.append(new_row, ignore_index=True)
+
+
+
+
+    return df
 
 
 

@@ -4,7 +4,7 @@ from pm4py.objects.log.util import dataframe_utils
 from pm4py.objects.conversion.log import converter as log_converter
 from pm4py.objects.log.util import interval_lifecycle
 import pandas as pd
-from queuemining.processmining.backendutils import filtertimerange,timesplittinghours,timesplittingbigger
+from queuemining.processmining.backendutils import filtertimerange,timesplittinghours,timesplittingbigger,calculateAverageoftimestep
 
 
 
@@ -37,19 +37,20 @@ def enrichlog(log):
 
 
 if __name__ == "__main__":
-    logobject = enrichlog(importLogs("reviewing.xes","time:timestamp"))
+    logobject = enrichlog(importLogs("running-example.xes","time:timestamp"))
     st,et = filtertimerange(logobject)
     print(st,et)
 
     timestep = 2000
     if timestep >= 24:
         datalist = timesplittingbigger(logobject,st,et,timestep,0,19,[])
+        frame = calculateAverageoftimestep(datalist,logobject)
     else:
         datalist = timesplittinghours(logobject,st,et,timestep,0,19,[])
+        frame = calculateAverageoftimestep(datalist,logobject)
 
 
-    for i in datalist:
-        print(i)
+    print(frame)
 
 
 
