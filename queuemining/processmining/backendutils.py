@@ -37,11 +37,12 @@ def eventDataFrameSorted(log):
         try:
             count = len(dataframe[dataframe["concept:name"] == i].index)
             average_service_time = int(dataframe[dataframe["concept:name"] == i].sum(axis=0,skipna=True)["@@duration"]/count)
-            capacity = conc_act_get.apply(log, parameters={conc_act_get.Parameters.TIMESTAMP_KEY: "time:timestamp",
+            capacity_list = conc_act_get.apply(log, parameters={conc_act_get.Parameters.TIMESTAMP_KEY: "time:timestamp",
                                                            conc_act_get.Parameters.START_TIMESTAMP_KEY: "start_timestamp"})
-            for item in capacity:
+            capacity = 0
+            for item in capacity_list:
                 if item == "("+"'"+i+"', '"+i+"'"+")":
-                    capacity = capacity[i]
+                    capacity +=1
                 else:
                     capacity = 1
 
@@ -88,7 +89,6 @@ def eventDataFrameSorted(log):
 
     if df.empty:
         return None
-
     return df
 
 

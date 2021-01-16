@@ -37,7 +37,7 @@ def enrichlog(log):
 
 
 if __name__ == "__main__":
-    logobject = enrichlog(importLogs("running-example.xes","time:timestamp"))
+    logobject = enrichlog(importLogs("reviewing.xes","time:timestamp"))
     st,et = filtertimerange(logobject)
     print(st,et)
 
