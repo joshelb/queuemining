@@ -60,6 +60,7 @@
                             <p>
                                 <a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
                             </p>
+
 						</ul>
 					</nav>
 				</div>
@@ -91,6 +92,22 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+
+                            <p>
+                                <a href="{% url 'queuemining:view_analysis' %}" onclick="doClick(); return false"><button>Show analysis</button></a>
+                            </p>
+
+							<script>
+								function doClick(){
+									if ("{{ current }}" === "None"){
+									    return confirm('Please submit timesteps!')
+									}
+									else{
+										window.location.href = "{% url 'queuemining:view_analysis' %}"
+									}
+								}
+							</script>
+
 						</div>
 					</section>
 			</div>

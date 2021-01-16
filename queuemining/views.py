@@ -78,5 +78,14 @@ def view_table(request):
         current_form = forms.CurrentForm(request)
     context['time_form'] = time_form
     context['current_form'] = current_form
+    context['current'] = request.session['current_time']
     return render(request, 'table.html', context)
+
+
+def view_analysis(request):
+    context = {}
+    context['timestep'] = "best timestep"
+    context['util'] = "utilization rate"
+    context['length'] = "queue length"
+    return render(request, 'detail.html', context)
 

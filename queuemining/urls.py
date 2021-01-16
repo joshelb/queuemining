@@ -8,7 +8,8 @@ app_name = 'queuemining'
 
 urlpatterns = [
     path('', views.get_data, name='get_data'),
-    path('view_table', views.view_table, name='view_table')
+    path('view_table', views.view_table, name='view_table'),
+    path('view_analysis', views.view_analysis, name='view_analysis')
 ]
 
 if settings.DEBUG:

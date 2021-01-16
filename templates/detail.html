@@ -1,0 +1,86 @@
+<!DOCTYPE HTML>
+<!--
+	Hyperspace by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+        {% load static %}
+		<title>Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="{% static 'queuemining/style.css' %}" />
+	</head>
+	<body class="is-preload">
+
+			<section id="sidebar">
+				<div class="inner">
+					<nav>
+						<ul>
+
+                          	<h3>Your best timestep</h3>
+
+                          	<p>{{ timestep }}</p>
+
+							<h3>Utilization rate</h3>
+
+                          	<p>{{ util }}</p>
+
+							<h3>Queue length</h3>
+
+                          	<p>{{ length }}</p>
+
+						</ul>
+					</nav>
+				</div>
+			</section>
+
+			<div id="wrapper">
+
+				<!-- Intro -->
+					<section id="intro" class="wrapper style1 fullscreen fade-up">
+						<div class="inner">
+							<h1>Analysis</h1>
+							<table>
+                                <thead>
+                                    <td>Activity</td>
+                                    <td>Number of cases in the queue</td>
+                                    <td>Average service time</td>
+                                    <td>Average waiting time</td>
+                                    <td>Resources</td>
+                                    <td>Capacity of the activity</td>
+                                </thead>
+                                <tbody>
+                                    {% for i in table_data %}
+                                    <tr>
+                                        <td>{{i.activity}}</td>
+                                        <td>{{i.number}}</td>
+                                        <td>{{i.service}}</td>
+                                        <td>{{i.waiting}}</td>
+                                        <td>{{i.resources}}</td>
+                                        <td>{{i.capacity}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+							<p>
+								<a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
+                            	<a href="{% url 'queuemining:view_table' %}"><button>View table page</button></a>
+                          	</p>
+
+						</div>
+					</section>
+			</div>
+
+			<footer id="footer" class="wrapper style1-alt">
+				<div class="inner">
+					<ul class="menu">
+						<li>Queuemining project for RWTH Aachen</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+					</ul>
+				</div>
+			</footer>
+
+	</body>
+</html>
