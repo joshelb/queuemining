@@ -23,6 +23,7 @@
 
                                 {{ current_form.as_p }}
 
+                                {{ current }}
                                 <p>Choose a timeframe to be visualized</p>
 
                                 <button type="submit" name="current_submit">Submit current</button>
@@ -70,28 +71,10 @@
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
 							<h1>Your Table</h1>
-                            <table>
-                                <thead>
-                                    <td>Activity</td>
-                                    <td>Number of cases in the queue</td>
-                                    <td>Average service time</td>
-                                    <td>Average waiting time</td>
-                                    <td>Resources</td>
-                                    <td>Capacity of the activity</td>
-                                </thead>
-                                <tbody>
-                                    {% for i in table_data %}
-                                    <tr>
-                                        <td>{{i.activity}}</td>
-                                        <td>{{i.number}}</td>
-                                        <td>{{i.service}}</td>
-                                        <td>{{i.waiting}}</td>
-                                        <td>{{i.resources}}</td>
-                                        <td>{{i.capacity}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+
+                            {% autoescape off %}
+                                {{ table_data }}
+                            {% endautoescape %}
 
                             <p>
                                 <a href="{% url 'queuemining:view_analysis' %}" onclick="doClick(); return false"><button>Show analysis</button></a>

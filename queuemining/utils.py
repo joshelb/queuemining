@@ -3,6 +3,7 @@ from .forms import DataForm
 from .models import Data, TimeStep
 from django.shortcuts import render
 from operator import itemgetter
+from queuemining.processmining.main import run as create_df
 
 
 def data_valid(form):
@@ -139,6 +140,13 @@ def is_time_available(request):
     if len(data_object.timestep.all()) == 0:
         return False
     return output
+
+
+def create_dataframe(request):
+    data = get_data(request)
+    df = create_df("media/" + str(data.document), request.session['current_time'], data.day_start, data.day_end,
+              data.offdays, data.start_name, data.end_name)
+    return df
 
 
 def analyse_get_data(df, timeframe):
