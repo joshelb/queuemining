@@ -17,6 +17,7 @@ from pm4py.statistics.performance_spectrum import algorithm as performance_spect
 
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
+
 def eventDataFrameSorted(log):
     event_stream = pm4py.convert_to_event_stream(log)
     dataframe = pm4py.convert_to_dataframe(log)
@@ -225,12 +226,3 @@ def calculateAverageoftimestep(dataframe_list,log):
 
 
     return df
-
-
-
-
-
-
-
-
-

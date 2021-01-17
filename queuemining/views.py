@@ -8,6 +8,7 @@ from . import utils
 import csv
 import os
 from django.conf import settings
+from processmining.main import run as create_df
 
 
 def get_data(request):
@@ -39,7 +40,8 @@ def view_table(request):
         and creates the table specified in the assignment pdf.
         The input will come from the processmining module where the information will be extracted from the event logs.
         When that functionality is added it will take .csv formatted tables directly from there."""
-    csv_fp = open(os.path.join(settings.BASE_DIR, 'test_csv.csv'))
+    data = utils.get_data(request)
+    df = create_df(data.document, request.session['current_time'], data.day_start, data.day_end, data.offdays, data.start_name, data.end_name)
     reader = csv.DictReader(csv_fp, delimiter=",")
     table_data = [i for i in reader]
     context = {'table_data': table_data}
@@ -78,7 +80,6 @@ def view_table(request):
         current_form = forms.CurrentForm(request)
     context['time_form'] = time_form
     context['current_form'] = current_form
-    context['current'] = request.session['current_time']
     return render(request, 'table.html', context)
 
 

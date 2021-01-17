@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from .forms import DataForm
 from .models import Data, TimeStep
 from django.shortcuts import render
+from operator import itemgetter
 
 
 def data_valid(form):
@@ -21,6 +22,12 @@ def hours_valid(form):
             and len(form.cleaned_data['offdays']) < 7:
         output = True
     return output
+
+
+def get_data(request):
+    data_id = request.session['data_id']
+    data_object = Data.objects.get(id=data_id)
+    return data_object
 
 
 def submit_data(form, request):
@@ -132,3 +139,70 @@ def is_time_available(request):
     if len(data_object.timestep.all()) == 0:
         return False
     return output
+
+
+def analyse_get_data(df, timeframe):
+    output = pd.DataFrame(columms=["Activity name", "Utilization rate", "Queue length"])
+    for index, row in df.iterrows:
+        act = row["activity_name"]
+        util = int(row["Cases in the queue"] / (timedelta(hours=timeframe).total_seconds()/(row["Average Service Time"]*row["Capacity of teh activity"])))
+        lil = int(row["Cases in the queue"]*row["Average Waiting Time"])
+        new_row = pd.Series(data={'Activity name': act, 'Utilization rate': util, 'Queue length': lil})
+        output = output.append(new_row, ignore_index=True)
+    return output
+
+
+def timestep_data(df, timeframe):
+    data = analyse_get_data(df, timeframe)
+    util = 0
+    lil = 0
+    for index, row in data.iterrows:
+        util += row["Utilization rate"]
+        lil += row["Queue length"]
+    return util, lil
+
+
+def time_convert(timeframe, unit):
+    """A shortcut function that converts a timestep to hours"""
+    if unit == "H":
+        output = timeframe
+    elif unit == "D":
+        output = timeframe * 24
+    elif unit == "W":
+        output = timeframe * 168
+    elif unit == "M":
+        output = timeframe * 720
+    return output
+
+
+def compare(df, data):
+    util_list = [()]
+    lil_list = [()]
+    for time in data.timestep.all():
+        time_frame = time.timeframe
+        unit = time.unit
+        time_id = time.id
+        dur = time_convert(time_frame, unit)
+        util, lil = timestep_data(df, dur)
+        util_list.append((time_id, util))
+        lil_list.append((time_id, lil))
+    util_list.sort(key=itemgetter(1), reverse=True)
+    lil_list.sort(key=itemgetter(1), reverse=False)
+    result_list = []
+    for time in data.timestep.all():
+        time_id_2 = time.id
+        i = 0
+        for util_2 in util_list:
+            if time_id_2 is util_2[0]:
+                util_pos = i
+            i += 1
+        j = 0
+        for lil_2 in lil_list:
+            if time_id_2 is lil_2[0]:
+                lil_pos = j
+            j += 1
+        result_list.append((time_id_2, (util_pos+lil_pos)))
+    result_list.sort(key=itemgetter(1), reverse=False)
+    best_time_id = result_list[0][0]
+    return best_time_id
+
