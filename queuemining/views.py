@@ -11,9 +11,7 @@ from django.conf import settings
 
 def get_data(request):
     """Get data is the view used to manage the upload of the event log,
-     as well as of the user setting the time window. In our current version,
-     we require the user to provide both inputs at the same time,
-     otherwise the data is not submitted."""
+     as well as all of the data needed for our calculations."""
     random.seed(10)
     context = {}
     if request.method == 'POST':
@@ -34,10 +32,7 @@ def get_data(request):
 
 
 def view_table(request):
-    """ This view gets a .csv formatted file (currently in base dir of the project)
-        and creates the table specified in the assignment pdf.
-        The input will come from the processmining module where the information will be extracted from the event logs.
-        When that functionality is added it will take .csv formatted tables directly from there."""
+    """View table is the view used to manage the creation and visualization of tables for each timestep."""
     context = {}
     if request.method == 'POST':
         time_form = forms.TimeForm(request.POST)
@@ -72,19 +67,25 @@ def view_table(request):
     else:
         time_form = forms.TimeForm()
         current_form = forms.CurrentForm(request)
-    df = utils.create_dataframe(request)
-    table_data = df.to_html()
+    if not request.session['current_time'] is None:
+        df = utils.create_dataframe(request)
+        table_data = df.to_html()
+    else:
+        table_data = "<p>Please submit a timestep</p>"
     context['table_data'] = table_data
     context['time_form'] = time_form
     context['current_form'] = current_form
-    context['current'] = request.session['current_time']
     return render(request, 'table.html', context)
 
 
 def view_analysis(request):
     context = {}
-    context['timestep'] = "best timestep"
-    context['util'] = "utilization rate"
-    context['length'] = "queue length"
+    best_id = utils.compare(request)
+    best_time_step = utils.get_timestep(best_id)
+    utils.set_current_time(request, best_time_step)
+    df = utils.create_dataframe(request)
+    table_data = df.to_html()
+    context['table_data'] = table_data
+    context['timestep'] = best_time_step.__str__()
     return render(request, 'detail.html', context)
 

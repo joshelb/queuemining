@@ -4,6 +4,8 @@ from .models import Data, TimeStep
 from django.shortcuts import render
 from operator import itemgetter
 from queuemining.processmining.main import run as create_df
+import pandas as pd
+from datetime import timedelta
 
 
 def data_valid(form):
@@ -29,6 +31,10 @@ def get_data(request):
     data_id = request.session['data_id']
     data_object = Data.objects.get(id=data_id)
     return data_object
+
+
+def get_timestep(time_id):
+    return TimeStep.objects.get(id=time_id)
 
 
 def submit_data(form, request):
@@ -150,8 +156,8 @@ def create_dataframe(request):
 
 
 def analyse_get_data(df, timeframe):
-    output = pd.DataFrame(columms=["Activity name", "Utilization rate", "Queue length"])
-    for index, row in df.iterrows:
+    output = pd.DataFrame(columns=["Activity name", "Utilization rate", "Queue length"])
+    for index, row in df.iterrows():
         act = row["activity_name"]
         util = int(row["Cases in the queue"] / (timedelta(hours=timeframe).total_seconds()/(row["Average Service Time"]*row["Capacity of teh activity"])))
         lil = int(row["Cases in the queue"]*row["Average Waiting Time"])
@@ -164,7 +170,7 @@ def timestep_data(df, timeframe):
     data = analyse_get_data(df, timeframe)
     util = 0
     lil = 0
-    for index, row in data.iterrows:
+    for index, row in data.iterrows():
         util += row["Utilization rate"]
         lil += row["Queue length"]
     return util, lil
@@ -183,14 +189,17 @@ def time_convert(timeframe, unit):
     return output
 
 
-def compare(df, data):
-    util_list = [()]
-    lil_list = [()]
+def compare(request):
+    util_list = []
+    lil_list = []
+    data = get_data(request)
     for time in data.timestep.all():
         time_frame = time.timeframe
         unit = time.unit
         time_id = time.id
         dur = time_convert(time_frame, unit)
+        df = create_df("media/" + str(data.document), dur, data.day_start, data.day_end,
+                       data.offdays, data.start_name, data.end_name)
         util, lil = timestep_data(df, dur)
         util_list.append((time_id, util))
         lil_list.append((time_id, lil))

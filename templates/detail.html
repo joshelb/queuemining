@@ -23,14 +23,6 @@
 
                           	<p>{{ timestep }}</p>
 
-							<h3>Utilization rate</h3>
-
-                          	<p>{{ util }}</p>
-
-							<h3>Queue length</h3>
-
-                          	<p>{{ length }}</p>
-
 						</ul>
 					</nav>
 				</div>
@@ -42,28 +34,9 @@
 					<section id="intro" class="wrapper style1 fullscreen fade-up">
 						<div class="inner">
 							<h1>Analysis</h1>
-							<table>
-                                <thead>
-                                    <td>Activity</td>
-                                    <td>Number of cases in the queue</td>
-                                    <td>Average service time</td>
-                                    <td>Average waiting time</td>
-                                    <td>Resources</td>
-                                    <td>Capacity of the activity</td>
-                                </thead>
-                                <tbody>
-                                    {% for i in table_data %}
-                                    <tr>
-                                        <td>{{i.activity}}</td>
-                                        <td>{{i.number}}</td>
-                                        <td>{{i.service}}</td>
-                                        <td>{{i.waiting}}</td>
-                                        <td>{{i.resources}}</td>
-                                        <td>{{i.capacity}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+							{% autoescape off %}
+                                {{ table_data }}
+                            {% endautoescape %}
 
 							<p>
 								<a href="{% url 'queuemining:get_data' %}"><button>View upload page</button></a>
