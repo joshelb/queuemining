@@ -50,7 +50,7 @@ if __name__ == "__main__":
 
 
 def run(log, timestep, bh_start, bh_end, weekends, start_name, end_name):
-    log_objects = enrichlog(importLogs(log, start_name, end_name))
+    logobject = enrichlog(importLogs(log, start_name, end_name))
     st, et = filtertimerange(logobject)
     print(st, et)
     if timestep >= 24:

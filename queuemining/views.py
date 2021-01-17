@@ -2,13 +2,12 @@ from django.shortcuts import render
 import random
 from django.http import HttpResponse
 from . import forms
-from . import models
 from django.template import loader
 from . import utils
 import csv
 import os
 from django.conf import settings
-from processmining.main import run as create_df
+from queuemining.processmining.main import run as create_df
 
 
 def get_data(request):
@@ -41,9 +40,11 @@ def view_table(request):
         The input will come from the processmining module where the information will be extracted from the event logs.
         When that functionality is added it will take .csv formatted tables directly from there."""
     data = utils.get_data(request)
-    df = create_df(data.document, request.session['current_time'], data.day_start, data.day_end, data.offdays, data.start_name, data.end_name)
-    reader = csv.DictReader(csv_fp, delimiter=",")
-    table_data = [i for i in reader]
+    print(data.document)
+    path = os.path.dirname(os.getcwd())
+
+    df = create_df("media/" + str(data.document), request.session['current_time'], data.day_start, data.day_end, data.offdays, data.start_name, data.end_name)
+    table_data = df.to_html()
     context = {'table_data': table_data}
     if request.method == 'POST':
         time_form = forms.TimeForm(request.POST)
