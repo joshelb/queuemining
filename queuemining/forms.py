@@ -5,7 +5,7 @@ from .models import Data, TimeStep
 class DataForm(forms.ModelForm):
     class Meta:
         model = Data
-        fields = ('document', 'start_name', 'end_name', 'timeframe', 'unit', 'offdays', 'day_start', 'day_end')
+        fields = ('document', 'timeframe', 'unit', 'offdays', 'day_start', 'day_end')
     UNIT_CHOICES = (
             ("N", "---"),
             ("H", "Hour"),
@@ -23,8 +23,6 @@ class DataForm(forms.ModelForm):
             ("6", "Saturday"),
             ("7", "Sunday"),
     )
-    start_name = forms.CharField(max_length=200, required=False)
-    end_name = forms.CharField(max_length=200, required=False)
     timeframe = forms.IntegerField(initial=1)
     unit = forms.ChoiceField(label='Unit', choices=UNIT_CHOICES)
     offdays = forms.MultipleChoiceField(choices=DAY_CHOICES, widget=forms.SelectMultiple)

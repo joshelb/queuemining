@@ -68,7 +68,7 @@ def view_table(request):
         time_form = forms.TimeForm()
         current_form = forms.CurrentForm(request)
     if not request.session['current_time'] is None:
-        df = utils.create_dataframe(request)
+        df = utils.show_dataframe(request.session['cur_timestep'])
         table_data = df.to_html()
     else:
         table_data = "<p>Please submit a timestep</p>"
@@ -83,7 +83,7 @@ def view_analysis(request):
     best_id = utils.compare(request)
     best_time_step = utils.get_timestep(best_id)
     utils.set_current_time(request, best_time_step)
-    df = utils.create_dataframe(request)
+    df = utils.show_dataframe(best_id)
     table_data = df.to_html()
     context['table_data'] = table_data
     context['timestep'] = best_time_step.__str__()

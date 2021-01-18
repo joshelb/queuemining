@@ -12,13 +12,13 @@ pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 
 """Handles the import of the Log Files and returns the log object"""
-def importLogs(filepath,start_name, end_name):
+def importLogs(filepath):
     if filepath[-4:] == '.xes':
         log = xes_importer.apply(filepath)
     elif filepath[-4:] == '.csv':
-        log = pd.read_csv('<path_to_csv_file.csv>', sep=',')
+        log = pd.read_csv(filepath, sep=',')
         log = dataframe_utils.convert_timestamp_columns_in_df(log)
-        log = log.sort_values(timestampcolumn)
+        log = log.sort_values("time:timestamp")
         log = log_converter.apply(log)
     return log
 
@@ -49,8 +49,8 @@ if __name__ == "__main__":
     print(frame)
 
 
-def run(log, timestep, bh_start, bh_end, weekends, start_name, end_name):
-    logobject = enrichlog(importLogs(log, start_name, end_name))
+def run(log, timestep, bh_start, bh_end, weekends):
+    logobject = enrichlog(importLogs(log))
     st, et = filtertimerange(logobject)
     print(st, et)
     if timestep >= 24:
