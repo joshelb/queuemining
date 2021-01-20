@@ -6,6 +6,7 @@ from operator import itemgetter
 from queuemining.processmining.main import run as create_df
 import pandas as pd
 from datetime import timedelta
+import os
 
 
 """Shortcut functions"""
@@ -159,6 +160,16 @@ def delete_time_all(request):
     return output
 
 
+def wipe_data(request):
+    if not request.session['data_id'] is None:
+        data_object = get_data(request)
+        delete_time_all(request)
+        if os.path.exists("media/" + str(data_object.document)):
+            os.remove("media/" + str(data_object.document))
+        data_object.delete()
+        request.session['data_id'] = None
+
+
 """Dataframe"""
 
 
@@ -166,7 +177,7 @@ def create_dataframe(request):
     """Creates a dataframe based on the users data"""
     data = get_data(request)
     df = create_df("media/" + str(data.document), request.session['current_time'], data.day_start, data.day_end,
-              data.offdays)
+                   data.offdays)
     return df
 
 
@@ -232,7 +243,10 @@ def analyse_get_data(df, timeframe):
     output = pd.DataFrame(columns=["Activity name", "Utilization rate", "Queue length"])
     for index, row in df.iterrows():
         act = row["Activity name"]
-        util = int(float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"]))))
+        if not row["Average service time"] == 0:
+            util = int(float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"]))))
+        else:
+            util = 0
         lil = int(row["Cases in the queue"]*row["Average waiting time"])
         new_row = pd.Series(data={'Activity name': act, 'Utilization rate': util, 'Queue length': lil})
         output = output.append(new_row, ignore_index=True)
@@ -248,6 +262,8 @@ def timestep_data(df, timeframe):
     for index, row in data.iterrows():
         util += row["Utilization rate"]
         lil += row["Queue length"]
+    if util == 0:
+        util = None
     return util, lil
 
 
@@ -264,11 +280,15 @@ def compare(request):
         dur = time_convert(time_frame, unit)
         df = show_dataframe(time_id)
         util, lil = timestep_data(df, dur)
-        util_list.append((time_id, util))
+        if not util is None:
+            util_list.append((time_id, util))
         lil_list.append((time_id, lil))
-    util_list.sort(key=itemgetter(1), reverse=True)
+    if len(util_list) == 0:
+        util_list.sort(key=itemgetter(1), reverse=True)
     lil_list.sort(key=itemgetter(1), reverse=False)
     result_list = []
+    util_pos = 0
+    lil_pos = 0
     for time in data.timestep.all():
         time_id_2 = time.id
         i = 0

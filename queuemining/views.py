@@ -26,6 +26,7 @@ def get_data(request):
     else:
         data_form = forms.DataForm()
         context['text'] = "Please enter the respective data into the sidebar!"
+        utils.wipe_data(request)
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))
@@ -79,6 +80,7 @@ def view_table(request):
 
 
 def view_analysis(request):
+    """This view"""
     context = {}
     best_id = utils.compare(request)
     best_time_step = utils.get_timestep(best_id)

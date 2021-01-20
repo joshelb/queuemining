@@ -7,24 +7,23 @@ import pandas as pd
 from queuemining.processmining.backendutils import filtertimerange,timesplittinghours,timesplittingbigger,calculateAverageoftimestep
 
 
-
 pd.set_option("display.max_rows", None, "display.max_columns", None)
 
 
-"""Handles the import of the Log Files and returns the log object"""
 def importLogs(filepath):
+    """Handles the import of the Log Files and returns the log object"""
     if filepath[-4:] == '.xes':
         log = xes_importer.apply(filepath)
     elif filepath[-4:] == '.csv':
-        log = pd.read_csv(filepath, sep=',')
+        log = pd.read_csv(filepath, sep=';')
         log = dataframe_utils.convert_timestamp_columns_in_df(log)
         log = log.sort_values("time:timestamp")
         log = log_converter.apply(log)
     return log
 
 
-"""Enriches the log object in case of lifcycle transitions if possible"""
 def enrichlog(log):
+    """Enriches the log object in case of lifcycle transitions if possible"""
     try:
         enriched_log = interval_lifecycle.assign_lead_cycle_time(log)
     except KeyError:
