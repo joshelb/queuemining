@@ -6,6 +6,11 @@ from operator import itemgetter
 from queuemining.processmining.main import run as create_df
 import pandas as pd
 from datetime import timedelta
+import matplotlib.pyplot as plt
+import plotly.graph_objects as go
+import os.path
+
+
 
 
 """Shortcut functions"""
@@ -227,14 +232,14 @@ def show_dataframe(time_id):
 """Analysis"""
 
 
-def analyse_get_data(df, timeframe):
+def analyse_get_data(df, timeframe,timeframestring):
     """Creates a dataframe containing relevant information to the analysis"""
-    output = pd.DataFrame(columns=["Activity name", "Utilization rate", "Queue length"])
+    output = pd.DataFrame(columns=["Activity name", "Utilization rate", "Queue length", "Timeframe"])
     for index, row in df.iterrows():
         act = row["Activity name"]
-        util = int(float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"]))))
+        util = float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"])))
         lil = int(row["Cases in the queue"]*row["Average waiting time"])
-        new_row = pd.Series(data={'Activity name': act, 'Utilization rate': util, 'Queue length': lil})
+        new_row = pd.Series(data={'Activity name': act, 'Utilization rate': util, 'Queue length': lil,'Timeframe': timeframestring})
         output = output.append(new_row, ignore_index=True)
     return output
 
@@ -242,7 +247,7 @@ def analyse_get_data(df, timeframe):
 def timestep_data(df, timeframe):
     """Adds up all the utilization rates and queue lengths from the before created dataframe,
      so that it is possible to compare based on the whole timestep, not just the single activities"""
-    data = analyse_get_data(df, timeframe)
+    data = analyse_get_data(df, timeframe,timeframe)
     util = 0
     lil = 0
     for index, row in data.iterrows():
@@ -296,6 +301,42 @@ def get_plot_data(request):
         time_frame = time.timeframe
         unit = time.unit
         dur = time_convert(time_frame, unit)
-        data = analyse_get_data(df, dur)
+        data = analyse_get_data(df, dur,str(time_frame) +" " + str(unit))
         output.append(data)
+    plotting(output,request)
     return output
+
+
+def plotting(dataframe_list,request):
+    for frame in dataframe_list:
+        plt.plot(frame["Activity name"].tolist(),frame['Utilization rate'].tolist(), label =frame["Timeframe"][0])
+    plt.xticks(rotation=90)
+    plt.title('Utilization Rate of every activity for each timeframe comparison')
+    plt.legend()
+    plt.tight_layout()
+    if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png' ):
+        pass
+    else:
+        plt.savefig("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
