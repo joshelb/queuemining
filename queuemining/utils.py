@@ -314,6 +314,7 @@ def plotting(dataframe_list,request):
         ax2.plot(frame["Activity name"].tolist(), frame['Queue length'].tolist(),label =frame["Timeframe"][0])
     ax1.tick_params(labelrotation=90)
     ax2.tick_params(labelrotation=90)
+    plt.legend()
     plt.tight_layout()
     if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png' ):
         pass
