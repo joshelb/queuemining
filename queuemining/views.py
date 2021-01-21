@@ -26,8 +26,8 @@ def get_data(request):
         context['text'] = text
     else:
         data_form = forms.DataForm()
-        context['text'] = "Please enter the respective data into the sidebar!"
         utils.wipe_data(request)
+        context['text'] = "Please enter the respective data into the sidebar!"
     context['data_form'] = data_form
     template = loader.get_template('main.html')
     return HttpResponse(template.render(context, request))

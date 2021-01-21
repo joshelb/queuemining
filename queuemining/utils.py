@@ -7,7 +7,6 @@ from queuemining.processmining.main import run as create_df
 import pandas as pd
 from datetime import timedelta
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 import os.path
 import os
 
@@ -164,13 +163,18 @@ def delete_time_all(request):
 
 
 def wipe_data(request):
-    if not request.session['data_id'] is None:
-        data_object = get_data(request)
-        delete_time_all(request)
-        if os.path.exists("media/" + str(data_object.document)):
-            os.remove("media/" + str(data_object.document))
-        data_object.delete()
-        request.session['data_id'] = None
+    try:
+        if not request.session['data_id'] is None:
+            data_object = get_data(request)
+            delete_time_all(request)
+            if os.path.exists("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png'):
+                os.remove("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png')
+            if os.path.exists("media/" + str(data_object.document)):
+                os.remove("media/" + str(data_object.document))
+            data_object.delete()
+            request.session['data_id'] = None
+    except KeyError:
+        pass
 
 
 """Dataframe"""
@@ -247,7 +251,7 @@ def analyse_get_data(df, timeframe,timeframestring):
     for index, row in df.iterrows():
         act = row["Activity name"]
         if not row["Average service time"] == 0:
-            util = int(float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"]))))
+            util = float(row["Cases in the queue"]) / (timedelta(hours=timeframe).total_seconds()/(float(row["Average service time"]*row["Capacity of the activity"])))
         else:
             util = 0
         lil = int(row["Cases in the queue"]*row["Average waiting time"])
@@ -337,7 +341,4 @@ def plotting(dataframe_list, request):
     ax2.tick_params(labelrotation=90)
     plt.legend()
     plt.tight_layout()
-    if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png'):
-        pass
-    else:
-        plt.savefig("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png')
+    plt.savefig("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png')
