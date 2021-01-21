@@ -11,8 +11,6 @@ import plotly.graph_objects as go
 import os.path
 
 
-
-
 """Shortcut functions"""
 
 
@@ -292,6 +290,9 @@ def compare(request):
     return best_time_id
 
 
+"""Plotting"""
+
+
 def get_plot_data(request):
     """Returns a list of dataframes containing data used for plots displayed on the analysis page"""
     data_object = get_data(request)
@@ -301,44 +302,22 @@ def get_plot_data(request):
         time_frame = time.timeframe
         unit = time.unit
         dur = time_convert(time_frame, unit)
-        data = analyse_get_data(df, dur,str(time_frame) +" " + str(unit))
+        data = analyse_get_data(df, dur, str(time_frame) + " " + str(unit))
         output.append(data)
-    plotting(output,request)
+    plotting(output, request)
     return output
 
 
-def plotting(dataframe_list,request):
+def plotting(dataframe_list, request):
     fig, (ax1, ax2) = plt.subplots(1, 2)
     for frame in dataframe_list:
-        ax1.plot(frame["Activity name"].tolist(), frame['Utilization rate'].tolist(),label =frame["Timeframe"][0])
-        ax2.plot(frame["Activity name"].tolist(), frame['Queue length'].tolist(),label =frame["Timeframe"][0])
+        ax1.plot(frame["Activity name"].tolist(), frame['Utilization rate'].tolist(), label=frame["Timeframe"][0])
+        ax2.plot(frame["Activity name"].tolist(), frame['Queue length'].tolist(), label=frame["Timeframe"][0])
     ax1.tick_params(labelrotation=90)
     ax2.tick_params(labelrotation=90)
     plt.legend()
     plt.tight_layout()
-    if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png' ):
+    if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png'):
         pass
     else:
         plt.savefig("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
