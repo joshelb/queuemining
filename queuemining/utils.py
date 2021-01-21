@@ -290,7 +290,7 @@ def compare(request):
         if not util is None:
             util_list.append((time_id, util))
         lil_list.append((time_id, lil))
-    if len(util_list) == 0:
+    if not len(util_list) == 0:
         util_list.sort(key=itemgetter(1), reverse=True)
     lil_list.sort(key=itemgetter(1), reverse=False)
     result_list = []
