@@ -86,7 +86,9 @@ def view_analysis(request):
     utils.set_current_time(request, best_time_step)
     df = utils.show_dataframe(best_id)
     result = utils.get_plot_data(request)
+    image = str(request.session['data_id'])+".png"
     table_data = df.to_html()
+    context["idimage"] = image
     context['table_data'] = table_data
     context['timestep'] = best_time_step.__str__()
     return render(request, 'detail.html', context)
