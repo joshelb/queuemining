@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from . import forms
 from django.template import loader
 from . import utils
+import matplotlib.pyplot as plt
 import csv
 import os
 from django.conf import settings
@@ -87,7 +88,10 @@ def view_analysis(request):
     best_time_step = utils.get_timestep(best_id)
     utils.set_current_time(request, best_time_step)
     df = utils.show_dataframe(best_id)
+    result = utils.get_plot_data(request)
+    image = str(request.session['data_id'])+".png"
     table_data = df.to_html()
+    context["idimage"] = image
     context['table_data'] = table_data
     context['timestep'] = best_time_step.__str__()
     return render(request, 'detail.html', context)
