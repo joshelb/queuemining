@@ -308,11 +308,12 @@ def get_plot_data(request):
 
 
 def plotting(dataframe_list,request):
+    fig, (ax1, ax2) = plt.subplots(1, 2)
     for frame in dataframe_list:
-        plt.plot(frame["Activity name"].tolist(),frame['Utilization rate'].tolist(), label =frame["Timeframe"][0])
-    plt.xticks(rotation=90)
-    plt.title('Utilization Rate of every activity for each timeframe comparison')
-    plt.legend()
+        ax1.plot(frame["Activity name"].tolist(), frame['Utilization rate'].tolist(),label =frame["Timeframe"][0])
+        ax2.plot(frame["Activity name"].tolist(), frame['Queue length'].tolist(),label =frame["Timeframe"][0])
+    ax1.tick_params(labelrotation=90)
+    ax2.tick_params(labelrotation=90)
     plt.tight_layout()
     if os.path.isfile("queuemining/static/queuemining/images/"+str(request.session['data_id'])+'.png' ):
         pass
